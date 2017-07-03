@@ -44,7 +44,7 @@ example1 <- ct_search(reporters = "China",
 
 # Inspect the return data
 str(example1$data)
-#> 'data.frame':    72 obs. of  35 variables:
+#> 'data.frame':    75 obs. of  35 variables:
 #>  $ Classification        : chr  "H4" "H4" "H4" "H4" ...
 #>  $ Year                  : int  2012 2012 2012 2013 2013 2013 2014 2014 2014 2015 ...
 #>  $ Period                : int  2012 2012 2012 2013 2013 2013 2014 2014 2014 2015 ...
@@ -91,12 +91,7 @@ library(comtradr)
 commoditydf <- ct_commodities_table("HS")
 
 # Then search for shrimp.
-commodity_lookup("shrimp", commoditydf)
-#> [1] "030613 - Shrimps and prawns, frozen"                                                                                                                                                                                                         
-#> [2] "030623 - Shrimps and prawns, not frozen"                                                                                                                                                                                                     
-#> [3] "160520 - Shrimps and prawns, prepared or preserved"                                                                                                                                                                                          
-#> [4] "160521 - Preparations of meat, of fish or of crustaceans, molluscs or other aquatic invertebrates // Crustaceans, molluscs and other aquatic invertebrates, prepared or preserved. // - Shrimps and prawns : // -- Not in airtight container"
-#> [5] "160529 - Preparations of meat, of fish or of crustaceans, molluscs or other aquatic invertebrates // Crustaceans, molluscs and other aquatic invertebrates, prepared or preserved. // - Shrimps and prawns : // -- Other"
+shrimp_codes <- commodity_lookup("shrimp", commoditydf, return_code = TRUE, return_char = TRUE)
 
 # API query.
 example2 <- ct_search(reporters = "Thailand",
@@ -105,15 +100,11 @@ example2 <- ct_search(reporters = "Thailand",
                       tradedirection = "exports",
                       startdate = "2007-01-01",
                       enddate = "2011-01-01",
-                      commodcodes = c("030613",
-                                      "030623",
-                                      "160520",
-                                      "160521",
-                                      "160529"))
+                      commodcodes = shrimp_codes)
 
 # Inspect the output
 str(example2$data)
-#> 'data.frame':    1056 obs. of  35 variables:
+#> 'data.frame':    1203 obs. of  35 variables:
 #>  $ Classification        : chr  "H3" "H3" "H3" "H3" ...
 #>  $ Year                  : int  2007 2007 2007 2007 2007 2007 2007 2007 2007 2007 ...
 #>  $ Period                : int  2007 2007 2007 2007 2007 2007 2007 2007 2007 2007 ...

@@ -1,8 +1,8 @@
 Package: comtradr
 Title: Interface with the United Nations Comtrade API
-Version: 0.0.1
+Version: 0.0.2
 Authors@R: person("Chris", "Muir", email = "chrismuirRVA@gmail.com", role = c("aut", "cre"))
-Description: Interface with and extract data from the United Nations Comtrade API <https://comtrade.un.org/data/>. Comtrade provides country level shipping data for a variety of commodities, these functions allow for easy API query and data returned as a tidy dataframe.
+Description: Interface with and extract data from the United Nations Comtrade API <https://comtrade.un.org/data/>. Comtrade provides country level shipping data for a variety of commodities, these functions allow for easy API query and data returned as a tidy data frame.
 Depends: R (>= 3.0.0)
 License: GPL-3
 Encoding: UTF-8
@@ -14,6 +14,7 @@ BugReports: https://github.com/ChrisMuir/comtradr/issues
 NeedsCompilation: no
 Author: Chris Muir [aut, cre]
 Maintainer: Chris Muir <chrismuirRVA@gmail.com>
-Packaged: 2017-04-05 13:20:03 UTC; cmuir
+Suggests: testthat
+Packaged: 2017-07-03 18:18:53 UTC; cmuir
 Repository: CRAN
-Date/Publication: 2017-04-05 13:50:53 UTC
+Date/Publication: 2017-07-03 23:11:01 UTC

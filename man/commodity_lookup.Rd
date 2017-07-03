@@ -4,38 +4,70 @@
 \alias{commodity_lookup}
 \title{UN Comtrade commodities lookup table query}
 \usage{
-commodity_lookup(value, lookuptable)
+commodity_lookup(values, lookuptable, return_code = FALSE,
+  return_char = FALSE, verbose = TRUE)
 }
 \arguments{
-\item{value}{Commodity name or commodity code, as a char or numeric vector.}
+\item{values}{Commodity names or commodity codes, as a char or numeric
+vector.}
 
-\item{lookuptable}{Dataframe of commodity descriptions and codes (intended 
-input is the dataframe created by function 
+\item{lookuptable}{Dataframe of commodity descriptions and codes (intended
+input is the dataframe created by function
 \code{\link{ct_commodities_table}}).}
+
+\item{return_code}{Logical, if set to FALSE, the function will return a
+set of commodity descriptions along with commodity codes (as a single
+string for each match found), if set to TRUE it will return only the
+commodity codes. Default value is FALSE.}
+
+\item{return_char}{Logical, if set to FALSE, the function will return the
+matches as a named list, if set to TRUE it will return them as a character
+vector. Default value is FALSE.}
+
+\item{verbose}{Logical, if set to TRUE, a warning message will print to
+console if any of the elements of input "values" returned no matches
+(message will indicate which elements returned no data). Default is TRUE.}
 }
 \value{
-A character vector of commodity descriptions that are matches with 
- the input.
+A list or character vector of commodity descriptions and/or
+ commodity codes that are matches with the elements of "values".
 }
 \description{
-The Comtrade API requires that searches for specific commodities be done 
-using commodity codes. This is a helper function for querying the 
-commodity code lookup table that's created by function 
-\code{\link{ct_commodities_table}}. It takes as input a commodity or 
-commodity code as a vector. If input is a commodity, then output is all 
-commodity codes and descriptions that are associated with the input value. 
-If input is a commodity code, then output is the commodity description 
-associated with that input code. For use with the UN Comtrade API, full API 
+The Comtrade API requires that searches for specific commodities be done
+using commodity codes. This is a helper function for querying the
+commodity code lookup table that's created by function
+\code{\link{ct_commodities_table}}. It takes as input a vector of
+commodities or commodity codes. If input is a commodity, then output is all
+commodity codes and descriptions that are associated with the input value.
+If input is a commodity code, then output is the commodity description
+associated with that input code. For use with the UN Comtrade API, full API
 docs can be found at \url{https://comtrade.un.org/data/doc/api/}
 }
 \examples{
 \dontrun{
-# Look up commodity codes related to "halibut"
+# Look up commodity descriptions related to "halibut"
 commoditydf <- ct_commodities_table("HS")
-commodity_lookup("halibut", commoditydf)
-[1] "030221 - Halibut, fresh or chilled, whole"
-[2] "030229 - Flatfish, fresh/chilled not halibut/plaice/sole, whol"
-[3] "030331 - Halibut, frozen, whole"
-[4] "030339 - Flatfish except halibut, plaice or sole, frozen, whol"
+commodity_lookup("halibut",
+                 commoditydf,
+                 return_code = FALSE,
+                 return_char = FALSE,
+                 verbose = TRUE)
+$halibut
+[1] "030221 - Fish; halibut (reinhardtius hippoglossoides, hippoglossus
+ hippoglossus, hippoglossus stenolepis), fresh or chilled (excluding
+ fillets, livers, roes and other fish meat of heading no. 0304)"
+[2] "030331 - Fish; halibut (reinhardtius hippoglossoides, hippoglossus
+ hippoglossus, hippoglossus stenolepis), frozen (excluding fillets, livers,
+ roes and other fish meat of heading no. 0304)"
+
+# Look up commodity codes related to "shrimp".
+comtradr::commodity_lookup("shrimp",
+                           commoditydf,
+                           return_code = TRUE,
+                           return_char = FALSE,
+                           verbose = TRUE)
+$shrimp
+[1] "030613" "030616" "030617" "030623" "030626" "030627" "030635" "030636"
+ "030695" "160520" "160521" "160529" "160540"
 }
 }

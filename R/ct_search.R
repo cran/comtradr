@@ -58,7 +58,7 @@
 #'    requests per hour (each per IP address or authenticated user).
 #'  }
 #'
-#'  In addition to these rate limits, the API imposses some limits on
+#'  In addition to these rate limits, the API imposes some limits on
 #'  parameter combinations, they are listed below:
 #'  \itemize{
 #'  \item Between params "reporters", "partners", and the query date range (as
@@ -118,7 +118,7 @@
 #' comtrade$details
 #' [1] "Connection successful"
 #' nrow(comtrade$data)
-#' [1] 72
+#' [1] 75
 #'
 #' ## Example API call number 2:
 #' # All shipments related to halibut between Canada and all other countries,
@@ -126,30 +126,35 @@
 #' # Create the commodities lookup table
 #' commoditydf <- ct_commodities_table("HS")
 #'
-#' # Perform "halibut" query
-#' commodity_lookup("halibut", commoditydf)
-#' [1] "030221 - Halibut, fresh or chilled, whole"
-#' [2] "030229 - Flatfish, fresh/chilled not halibut/plaice/sole, whol"
-#' [3] "030331 - Halibut, frozen, whole"
-#' [4] "030339 - Flatfish except halibut, plaice or sole, frozen, whol"
+#' # Perform "shrimp" query
+#' shrimp_codes <- commodity_lookup("shrimp",
+#'                                  commoditydf,
+#'                                  return_code = TRUE,
+#'                                  return_char = TRUE,
+#'                                  verbose = TRUE)
 #'
 #' # Make API call
+#' shrimp_codes <- commodity_lookup("shrimp",
+#'                                  commoditydf,
+#'                                  return_code = TRUE,
+#'                                  return_char = TRUE,
+#'                                  verbose = TRUE)
 #' comtrade <- ct_search(reporters = "Canada",
 #'                       partners = "All",
 #'                       countrytable = countrydf,
 #'                       tradedirection = "all",
 #'                       startdate = "2011-01-01",
 #'                       enddate = "2015-01-01",
-#'                       commodcodes = c("030221", "030331"))
+#'                       commodcodes = shrimp_codes)
 #' comtrade$msg
 #' [1] "Data returned"
 #' comtrade$details
 #' [1] "Connection successful"
 #' nrow(comtrade$data)
-#' [1] 219
+#' [1] 1321
 #' }
 ct_search <- function(reporters, partners, countrytable,
-                      url = "http://comtrade.un.org/api/get?", maxrec = 50000,
+                      url = "https://comtrade.un.org/api/get?", maxrec = 50000,
                       type = c("goods", "services"),
                       freq = c("annual", "monthly"),
                       startdate = "all", enddate = "all",
@@ -181,11 +186,15 @@ ct_search <- function(reporters, partners, countrytable,
   if (any(c(startdate, enddate) %in% c("all", "All", "ALL"))) {
     daterange <- "all"
   } else {
-    sd <- tryCatch(as.Date(startdate, format = "%Y-%m-%d"), error=function(e) e)
-    ed <- tryCatch(as.Date(enddate, format = "%Y-%m-%d"), error=function(e) e)
+    sd <- tryCatch(
+      as.Date(startdate, format = "%Y-%m-%d"), error = function(e) e
+    )
+    ed <- tryCatch(
+      as.Date(enddate, format = "%Y-%m-%d"), error = function(e) e
+    )
     if (any(methods::is(sd, "error"), methods::is(ed, "error"),
             is.na(sd), is.na(ed))) {
-      stop("params 'startdate' & 'enddate' must either be 'all' or be dates",
+      stop("params 'startdate' & 'enddate' must either be 'all' or be dates ",
            "that have format 'yyyy-mm-dd'", call. = FALSE)
     }
 
@@ -222,7 +231,7 @@ ct_search <- function(reporters, partners, countrytable,
   } else if (is.list(ids)) {
     err <- paste(
       reporters[!reporters %in% names(unlist(ids))], collapse = ", ")
-    stop(paste("From param reporters, these values were not found in the",
+    stop(paste("From param reporters, these values were not found in the ",
                "country code lookup table:", err))
   }
 
@@ -242,7 +251,7 @@ ct_search <- function(reporters, partners, countrytable,
   } else if (is.list(ids)) {
     err <- paste(
       partners[!partners %in% names(unlist(ids))], collapse = ", ")
-    stop(paste("From param reporters, these values were not found in the",
+    stop(paste("From param partners, these values were not found in the ",
                "country code lookup table:", err))
   }
 
