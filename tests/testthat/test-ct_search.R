@@ -1,161 +1,185 @@
 context("ct_search")
 
-# All tests on the expected return data.
-test_that("search return values are correct, and fail when expected", {
-  skip_on_cran()
-  skip_on_travis()
 
-  countrydf <- ct_countries_table()
+test_that("correct api vals given: 1 reporter, 1 partner, imports, monthly", {
+  skip_on_cran()
 
   # Get monhtly data on all German imports into Canada,
   # 2011-01-01 thru 2011-05-01.
-  ex1 <- ct_search(reporters = "Canada",
-                   partners = "Germany",
-                   countrytable = countrydf,
-                   tradedirection = "imports",
-                   freq = "monthly",
-                   startdate = "2011-01-01",
-                   enddate = "2011-05-01")
+  vals <- ct_search(reporters = "Canada",
+                    partners = "Germany",
+                    trade_direction = "imports",
+                    freq = "monthly",
+                    start_date = "2011-01-01",
+                    end_date = "2011-05-01")
 
-  # Get yearly data on Canadian shrimp exports into Germany and Thailand,
+  # Data type.
+  expect_is(vals, "data.frame")
+
+  # Number of variables.
+  expect_equal(ncol(vals), 35)
+
+  # Variable "Reporter".
+  expect_equal(unique(vals$reporter), "Canada")
+
+  # Variable "Partner".
+  expect_equal(unique(vals$partner), "Germany")
+
+  # Variable "Trade Flow".
+  expect_equal(unique(vals$trade_flow), "Imports")
+
+  # Variable "Period".
+  expect_equal(sort(vals$period)[1], 201101)
+
+  # Variable "Commodity Code".
+  expect_equal(unique(vals$commodity_code), "TOTAL")
+})
+
+
+msg <- paste0("correct api vals given: 1 reporter, 2 partners, ",
+              "all trade directions, annual, only shrimp")
+test_that(msg, {
+  skip_on_cran()
+
+  # Get yearly data on US shrimp exports into Germany and Thailand,
   # for all years on record.
   shrimp_codes <- c("030613",
                     "030623",
                     "160520",
                     "160521",
                     "160529")
-  ex2 <- ct_search(reporters = "Canada",
-                   partners = c("Germany", "Thailand"),
-                   countrytable = countrydf,
-                   tradedirection = "exports",
-                   freq = "annual",
-                   startdate = "all",
-                   enddate = "all",
-                   commodcodes = shrimp_codes)
+  vals <- ct_search(reporters = "USA",
+                    partners = c("Germany", "Thailand"),
+                    trade_direction = "exports",
+                    freq = "annual",
+                    start_date = "2011-01-01",
+                    end_date = "2015-01-01",
+                    commod_codes = shrimp_codes)
 
-  ## ex1 tests
   # Data type.
-  expect_is(ex1, "list")
-  expect_is(ex1$data, "data.frame")
+  expect_is(vals, "data.frame")
 
   # Number of variables.
-  expect_equal(ncol(ex1$data), 35)
+  expect_equal(ncol(vals), 35)
 
   # Variable "Reporter".
-  expect_equal(unique(ex1$data$Reporter), "Canada")
+  expect_equal(unique(vals$reporter), "USA")
 
   # Variable "Partner".
-  expect_equal(unique(ex1$data$Partner), "Germany")
-
-  # Variable "Trade Flow".
-  expect_equal(unique(ex1$data$`Trade Flow`), "Imports")
+  expect_equal(sort(unique(vals$partner)), c("Germany", "Thailand"))
 
   # Variable "Period".
-  expect_equal(ex1$data$Period[1], 201101)
+  expect_equal(sort(unique(vals$year))[1:3], c(2011, 2012, 2013))
 
   # Variable "Commodity Code".
-  expect_equal(unique(ex1$data$`Commodity Code`), "TOTAL")
-
-  ## ex2 tests
-  # Data type.
-  expect_is(ex2, "list")
-  expect_is(ex2$data, "data.frame")
-
-  # Number of variables.
-  expect_equal(ncol(ex2$data), 35)
-
-  # Variable "Reporter".
-  expect_equal(unique(ex2$data$Reporter), "Canada")
-
-  # Variable "Partner".
-  expect_equal(sort(unique(ex2$data$Partner)), c("Germany", "Thailand"))
-
-  # Variable "Trade Flow".
-  expect_equal(unique(ex2$data$`Trade Flow`), "Export")
-
-  # Variable "Period".
-  expect_equal(sort(unique(ex2$data$Period))[1:3], c(1989, 1990, 1991))
-
-  # Variable "Commodity Code".
-  expect_equal(sort(unique(ex2$data$`Commodity Code`)), shrimp_codes)
+  expect_equal(sort(unique(vals$commodity_code)), shrimp_codes)
 
   # Variable "Netweight (kg)".
-  expect_is(ex2$data$`Netweight (kg)`, "integer")
+  expect_is(vals$netweight_kg, "integer")
+})
 
-  ## Check that ct_search is failing as expected.
-  # Throw error with invalid input for param "reporters".
+
+test_that("throw error with invalid input to arg 'reporters'", {
   expect_error(ct_search(reporters = "invalid_reporter",
                          partners = "Germany",
-                         countrytable = countrydf,
-                         tradedirection = "imports"))
+                         trade_direction = "imports"))
+})
 
-  # Throw error with invalid input for param "partners".
-  expect_error(ct_search(reporters = "Canada",
+
+test_that("throw error with invalid input to arg 'partners'", {
+  expect_error(ct_search(reporters = "all",
                          partners = "invalid_partner",
-                         countrytable = countrydf,
-                         tradedirection = "imports"))
+                         trade_direction = "imports",
+                         start_date = "2011-01-01",
+                         end_date = "2012-01-01"))
+})
 
-  # Throw error with invalid input for param "countrytable".
+
+test_that("throw error with invalid input to arg 'trade_direction'", {
+  expect_error(ct_search(reporters = "Canada",
+                         partners = "all",
+                         trade_direction = "invalid_td",
+                         start_date = "2011-01-01",
+                         end_date = "2012-01-01"))
+})
+
+
+test_that("throw error with invalid input to arg 'type'", {
   expect_error(ct_search(reporters = "Canada",
                          partners = "Germany",
-                         countrytable = data.frame(),
-                         tradedirection = "imports"))
-
-  # Throw error with invalid input for param "tradedirection".
-  expect_error(ct_search(reporters = "Canada",
-                         partners = "Germany",
-                         countrytable = countrydf,
-                         tradedirection = "invalid_td"))
-
-  # Throw error with invalid input for param "type".
-  expect_error(ct_search(reporters = "Canada",
-                         partners = "Germany",
-                         countrytable = countrydf,
-                         tradedirection = "imports",
+                         trade_direction = "imports",
                          type = "invalid_type"))
+})
 
-  # Throw error with invalid input for param "freq".
+
+test_that("throw error with invalid input to arg 'freq'", {
   expect_error(ct_search(reporters = "Canada",
                          partners = "Germany",
-                         countrytable = countrydf,
-                         tradedirection = "imports",
+                         trade_direction = "imports",
                          freq = "invalid_freq"))
+})
 
-  # Throw error with invalid input for params "startdate" and "endate".
+
+test_that("throw error with invalid input to arg 'start_date' & 'end_date'", {
   expect_error(ct_search(reporters = "Canada",
                          partners = "Germany",
-                         countrytable = countrydf,
-                         tradedirection = "imports",
+                         trade_direction = "imports",
                          freq = "monthly",
-                         startdate = "1/1/2011",
-                         enddate = "5/1/2011"))
+                         start_date = "1/1/2011",
+                         end_date = "5/1/2011"))
+})
 
-  # Returned error msg from the API with invalid input for param "commodcodes".
-  ex1 <- ct_search(reporters = "Canada",
-                   partners = "Germany",
-                   countrytable = countrydf,
-                   tradedirection = "imports",
-                   commodcodes = "invalid_codes")
-  expect_equal(ex1$details, "invalid_codes is an invalid commodity code.")
 
-  # Throw error with invalid input for param "fmt".
+test_that("throw error with invalid input to arg 'commod_codes'", {
+  skip_on_cran()
+
   expect_error(ct_search(reporters = "Canada",
                          partners = "Germany",
-                         countrytable = countrydf,
-                         tradedirection = "imports",
-                         fmt = "invalid_fmt"))
+                         trade_direction = "all",
+                         commod_codes = "invalid_codes"),
+               regexp = "invalid_codes is an invalid commodity code.",
+               fixed = TRUE)
+})
 
-  # Throw error with invalid input for param "colname".
-  expect_error(ct_search(reporters = "Canada",
-                         partners = "Germany",
-                         countrytable = countrydf,
-                         tradedirection = "imports",
-                         colname = "invalid_fmt"))
 
-  # Throw error with invalid input for param "codetype".
+test_that("throw error with too many catch-all 'all' input values", {
+  expect_error(ct_search(reporters = "all",
+                         partners = "all"))
+})
+
+
+test_that("throw error with more than five specified reporter countries", {
+  expect_error(ct_search(reporters = c("Canada", "USA", "Mexico", "Germany",
+                                       "France", "China"),
+                         partners = "Japan"))
+})
+
+
+test_that("throw error with more than 20 commodity codes", {
+  expect_error(
+    ct_search(reporters = "Germany",
+              partners = "Japan",
+              trade_direction = c("imports",
+                                  "exports",
+                                  "re_imports",
+                                  "re_exports"),
+              commod_codes = ct_commodity_lookup("frozen",
+                                                 return_char = TRUE,
+                                                 return_code = TRUE))
+  )
+})
+
+
+test_that("throw error when hourly query limit is at zero", {
+  # Get current rate limit values.
+  cache_vals <- get_cache_values()
+
+  # Assign the hourly limit value to be 0.
+  assign("queries_this_hour", 0, envir = ct_env)
+
   expect_error(ct_search(reporters = "Canada",
-                         partners = "Germany",
-                         countrytable = countrydf,
-                         tradedirection = "imports",
-                         codetype = "invalid_codetype"))
+                         partners = "Germany"))
+
+  # Set the rate limit value back to what it was previously.
+  assign("queries_this_hour", cache_vals$queries_this_hour, envir = ct_env)
 })
