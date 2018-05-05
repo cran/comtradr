@@ -10,27 +10,43 @@ knitr::opts_chunk$set(comment = "#>", collapse = TRUE, fig.width = 9, fig.height
 ## ------------------------------------------------------------------------
 library(comtradr)
 
-## ------------------------------------------------------------------------
-q <- ct_search(reporters = "USA", 
-               partners = c("Germany", "France", "Japan", "Mexico"), 
-               trade_direction = "imports")
+## ---- echo = FALSE-------------------------------------------------------
+v_data_1 <- system.file("extdata", "vignette_data_1.rda", package = "comtradr")
+if (!file.exists(v_data_1)) {
+  stop("internal vignette data set '~/extdata/vignette_data_1.rda' not found", call. = FALSE)
+}
+load(v_data_1)
 
-# API calls return a tidy data frame.
+## ---- eval = FALSE-------------------------------------------------------
+#  q <- ct_search(reporters = "USA",
+#                 partners = c("Germany", "France", "Japan", "Mexico"),
+#                 trade_direction = "imports")
+
+## ------------------------------------------------------------------------
 str(q)
 
 ## ---- eval = FALSE-------------------------------------------------------
 #  q <- ct_search(reporters = "USA",
 #                 partners = c("Germany", "France", "Japan", "Mexico"),
 #                 trade_direction = "imports",
-#                 start_date = "2010-01-01",
-#                 end_date = "2014-01-01")
+#                 start_date = 2010,
+#                 end_date = 2014)
 
 ## ---- eval = FALSE-------------------------------------------------------
+#  # Get all monthly data for a single year (API max of 12 months per call).
 #  q <- ct_search(reporters = "USA",
 #                 partners = c("Germany", "France", "Japan", "Mexico"),
 #                 trade_direction = "imports",
-#                 start_date = "2012-03-01",
-#                 end_date = "2012-07-01",
+#                 start_date = 2012,
+#                 end_date = 2012,
+#                 freq = "monthly")
+#  
+#  # Get monthly data for a specific span of months (API max of five months per call).
+#  q <- ct_search(reporters = "USA",
+#                 partners = c("Germany", "France", "Japan", "Mexico"),
+#                 trade_direction = "imports",
+#                 start_date = "2012-03",
+#                 end_date = "2012-07",
 #                 freq = "monthly")
 
 ## ------------------------------------------------------------------------
@@ -55,11 +71,11 @@ ct_commodity_lookup("tomato")
 #                 trade_direction = "all",
 #                 commod_codes = tomato_codes)
 
-## ------------------------------------------------------------------------
-q <- ct_search(reporters = "USA", 
-               partners = c("Germany", "France", "Mexico"), 
-               trade_direction = "all", 
-               commod_codes = c("0702", "070200", "2002", "200210", "200290"))
+## ---- eval = FALSE-------------------------------------------------------
+#  q <- ct_search(reporters = "USA",
+#                 partners = c("Germany", "France", "Mexico"),
+#                 trade_direction = "all",
+#                 commod_codes = c("0702", "070200", "2002", "200210", "200290"))
 
 ## ------------------------------------------------------------------------
 # The url of the API call.
@@ -81,8 +97,9 @@ ct_commodity_lookup(c("tomato", "trout"), return_char = FALSE)
 ## ------------------------------------------------------------------------
 ct_commodity_lookup(c("tomato", "sldfkjkfdsklsd"), verbose = TRUE)
 
-## ------------------------------------------------------------------------
-ct_update_databases()
+## ---- eval = FALSE-------------------------------------------------------
+#  ct_update_databases()
+#  #> All DB's are up to date, no action required
 
 ## ------------------------------------------------------------------------
 ct_commodity_db_type()
@@ -98,13 +115,21 @@ q <- ct_use_pretty_cols(q)
 # Print new column headers.
 colnames(q)
 
+## ---- echo = FALSE-------------------------------------------------------
+v_data_2 <- system.file("extdata", "vignette_data_2.rda", package = "comtradr")
+if (!file.exists(v_data_2)) {
+  stop("internal vignette data set '~/extdata/vignette_data_2.rda' not found", call. = FALSE)
+}
+load(v_data_2)
+
+## ---- eval = FALSE-------------------------------------------------------
+#  # Comtrade api query.
+#  df <- ct_search(reporters = "China",
+#                  partners = c("Rep. of Korea", "USA", "Mexico"),
+#                  trade_direction = "exports")
+
 ## ---- warning = FALSE, message = FALSE-----------------------------------
 library(ggplot2)
-
-# Comtrade api query.
-df <- ct_search(reporters = "China", 
-                partners = c("Rep. of Korea", "USA", "Mexico"), 
-                trade_direction = "exports")
 
 # Apply polished col headers.
 df <- ct_use_pretty_cols(df)
@@ -122,22 +147,30 @@ ggplot(df, aes(Year, `Trade Value usd`, color = factor(`Partner Country`),
   labs(title = "Total Value (USD) of Chinese Exports, by Year") +
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
 
+## ---- echo = FALSE-------------------------------------------------------
+v_data_3 <- system.file("extdata", "vignette_data_3.rda", package = "comtradr")
+if (!file.exists(v_data_3)) {
+  stop("internal vignette data set '~/extdata/vignette_data_3.rda' not found", call. = FALSE)
+}
+load(v_data_3)
+
+## ---- eval = FALSE-------------------------------------------------------
+#  # First, collect commodity codes related to shrimp.
+#  shrimp_codes <- ct_commodity_lookup("shrimp",
+#                                      return_code = TRUE,
+#                                      return_char = TRUE)
+#  
+#  # Comtrade api query.
+#  df <- ct_search(reporters = "Thailand",
+#                  partners = "All",
+#                  trade_direction = "exports",
+#                  start_date = 2007,
+#                  end_date = 2011,
+#                  commod_codes = shrimp_codes)
+
 ## ---- warning = FALSE, message = FALSE-----------------------------------
 library(ggplot2)
 library(dplyr)
-
-# First, collect commodity codes related to shrimp.
-shrimp_codes <- ct_commodity_lookup("shrimp", 
-                                    return_code = TRUE, 
-                                    return_char = TRUE)
-
-# Comtrade api query.
-df <- ct_search(reporters = "Thailand", 
-                partners = "All", 
-                trade_direction = "exports", 
-                start_date = "2007-01-01", 
-                end_date = "2011-01-01", 
-                commod_codes = shrimp_codes)
 
 # Apply polished col headers.
 df <- ct_use_pretty_cols(df)
@@ -154,9 +187,9 @@ plotdf <- df %>%
 top8 <- plotdf %>% 
   group_by(`Partner Country`) %>% 
   summarise(kg = as.numeric(sum(kg, na.rm = TRUE))) %>% 
+  top_n(8, kg) %>%
   arrange(desc(kg)) %>% 
-  magrittr::extract2("Partner Country") %>% 
-  magrittr::extract(1:8)
+  .[["Partner Country"]]
 plotdf <- plotdf %>% filter(`Partner Country` %in% top8)
 
 # Create plots (y-axis is NOT fixed across panels, this will allow us to ID 

@@ -17,9 +17,11 @@
 #' @param freq Time frequency of the returned results, as a character string.
 #'  Must be either "annual" or "monthly". Default value is "annual".
 #' @param start_date Start date of a time period, or "all". Default value is
-#'  "all". If inputing a date, must be string w/ structure "yyyy-mm-dd".
-#' @param end_date End date of a time period, or "all". Default value is "all".
-#'  If inputing a date, must be string w/ structure "yyyy-mm-dd".
+#'  "all". See "details" for more info on valid input formats when not using
+#'  "all" as input.
+#' @param end_date End date of a time period, or "all". Default value is
+#'  "all". See "details" for more info on valid input formats when not using
+#'  "all" as input.
 #' @param commod_codes Character vector of commodity codes, or "TOTAL". Valid
 #'  commodity codes as input will restrict the query to only look for trade
 #'  related to those commodities, "TOTAL" as input will return all trade
@@ -36,9 +38,9 @@
 #'  value is "https://comtrade.un.org/api/get?" and should mot be changed
 #'  unless Comtrade changes their endpoint url.
 #'
-#' @details Basic rate limit restrictions. For details on how to register a
-#'  valid token, see \code{\link{ct_register_token}}. For API docs on rate
-#'  limits, see \url{https://comtrade.un.org/data/doc/api/#Limits}
+#' @details Basic rate limit restrictions listed below. For details on how to
+#'  register a valid token, see \code{\link{ct_register_token}}. For API docs
+#'  on rate limits, see \url{https://comtrade.un.org/data/doc/api/#Limits}
 #'  \itemize{
 #'  \item Without authentication token: 1 request per second, 100 requests
 #'    per hour (each per IP address).
@@ -54,8 +56,11 @@
 #'    these three may use the catch-all input "All".
 #'  \item For the same group of three ("reporters", "partners", date range),
 #'    if the input is not "All", then the maximum number of input values
-#'    for each is five (for date range, if not using "all", then the
-#'    "start_date" and "end_date" must at most span five months or five years).
+#'    for each is five. For date range, if not using "All", then the
+#'    "start_date" and "end_date" must not span more than five months or five
+#'    years. There is one exception to this rule, if arg "freq" is "monthly",
+#'    then a single year can be passed to "start_date" and "end_date" and the
+#'    API will return all of the monthly data for that year.
 #'  \item For param "commod_codes", if not using input "All", then the maximum
 #'    number of input values is 20 (although "All" is always a valid input).
 #'  }
@@ -68,11 +73,19 @@
 #'  \item req_duration: total duration of the API call, in seconds.
 #'  }
 #'
+#'  For args \code{start_date} and \code{end_date}, if inputting a date (as
+#'  opposed to the catch-all input "all"), valid input format is dependent on
+#'  the input passed to arg \code{freq}. If \code{freq} is "annual",
+#'  \code{start_date} and \code{end_date} must be either a string w/ format
+#'  "yyyy" or "yyyy-mm-dd", or a year as an integer (so "2016", "2016-01-01",
+#'  and 2016 would all be valid). If \code{freq} is "monhtly",
+#'  \code{start_date} and \code{end_date} must be a string with format
+#'  "yyyy-mm" or "yyyy-mm-dd" (so "2016-02" and "2016-02-01" would both be
+#'  valid).
+#'
 #' @return Data frame of Comtrade shipping data.
 #'
 #' @export
-#'
-#' @importFrom magrittr "%>%"
 #'
 #' @examples \dontrun{
 #' ## Example API call number 1:
@@ -95,8 +108,8 @@
 #' ex_2 <- ct_search(reporters = "Canada",
 #'                   partners = "All",
 #'                   trade_direction = "all",
-#'                   start_date = "2011-01-01",
-#'                   end_date = "2015-01-01",
+#'                   start_date = 2011,
+#'                   end_date = 2015,
 #'                   commod_codes = shrimp_codes)
 #' nrow(ex_2)
 #'
@@ -160,12 +173,22 @@ ct_search <- function(reporters, partners,
     stop(msg, call. = FALSE)
   }
 
+  ## Get the commodity code scheme type to use.
+  code_type <- ct_commodity_db_type() %>%
+    commodity_type_switch
+
   ## Transformations to type.
   type <- match.arg(type)
+
   if (type == "goods") {
     type <- "C"
   } else if (type == "services") {
     type <- "S"
+  }
+
+  # If type == "S", then code_type must be "EB02".
+  if (type == "S" && code_type != "EB02") {
+    code_type <- "EB02"
   }
 
   ## Transformations to freq.
@@ -180,39 +203,7 @@ ct_search <- function(reporters, partners,
   if (any(c(start_date, end_date) %in% c("all", "All", "ALL"))) {
     date_range <- "all"
   } else {
-    sd <- tryCatch(
-      as.Date(start_date, format = "%Y-%m-%d"), error = function(e) e
-    )
-    ed <- tryCatch(
-      as.Date(end_date, format = "%Y-%m-%d"), error = function(e) e
-    )
-    if (any(methods::is(sd, "error"), methods::is(ed, "error"),
-            is.na(sd), is.na(ed))) {
-      stop("args 'start_date' & 'end_date' must either be 'all' or be dates ",
-           "that have format 'yyyy-mm-dd'", call. = FALSE)
-    }
-
-    if (freq == "A") {
-      date_range <- seq.Date(as.Date(start_date, format = "%Y-%m-%d"),
-                             as.Date(end_date, format = "%Y-%m-%d"),
-                             by = "year") %>%
-        as.Date() %>%
-        format(format = "%Y")
-    } else if (freq == "M") {
-      date_range <- seq.Date(as.Date(start_date, format = "%Y-%m-%d"),
-                             as.Date(end_date, format = "%Y-%m-%d"),
-                             by = "month") %>%
-        as.Date() %>%
-        format(format = "%Y%m")
-    }
-
-    # Check to make sure the total date range is five or fewer months/years.
-    if (length(date_range) > 5) {
-      stop(paste("if date range specified, the span of months or years",
-                 "must be five or fewer"), call. = TRUE)
-    }
-
-    date_range <- paste(date_range, collapse = ",")
+    date_range <- get_date_range(start_date, end_date, freq)
   }
 
   ## Transformations to reporters.
@@ -238,7 +229,7 @@ ct_search <- function(reporters, partners,
     country_df[country_df$country_name == x &
                    country_df$reporter == TRUE, ]$code
   }) %>%
-    paste(collapse = ",")
+    paste(collapse = "%2C")
 
   ## Transformations to partners.
   if (any(partners %in% c("all", "All", "ALL"))) {
@@ -263,7 +254,7 @@ ct_search <- function(reporters, partners,
     country_df[country_df$country_name == x &
                    country_df$partner == TRUE, ]$code
   }) %>%
-    paste(collapse = ",")
+    paste(collapse = "%2C")
 
   ## Transformations to trade_direction.
   if (any(tolower(trade_direction) == "all")) {
@@ -280,7 +271,7 @@ ct_search <- function(reporters, partners,
       if (length(rg) == 0) {
         rg <- "2"
       } else {
-        rg <- paste(rg, "2", sep = ",")
+        rg <- paste(rg, "2", sep = "%2C")
       }
     }
 
@@ -288,7 +279,7 @@ ct_search <- function(reporters, partners,
       if (length(rg) == 0) {
         rg <- "3"
       } else {
-        rg <- paste(rg, "3", sep = ",")
+        rg <- paste(rg, "3", sep = "%2C")
       }
     }
 
@@ -296,7 +287,7 @@ ct_search <- function(reporters, partners,
       if (length(rg) == 0) {
         rg <- "4"
       } else {
-        rg <- paste(rg, "4", sep = ",")
+        rg <- paste(rg, "4", sep = "%2C")
       }
     }
 
@@ -306,18 +297,21 @@ ct_search <- function(reporters, partners,
   ## Transformations to commod_codes.
   stopifnot(is.character(commod_codes))
   if (any(tolower(commod_codes) == "total")) {
-    commod_codes <- "TOTAL"
+    if (code_type != "EB02") {
+      commod_codes <- "TOTAL"
+    } else {
+      # If code_type is "EB02" and input to commod_codes includes "total",
+      # then make commod_codes "200" ("total == "200" in EB02).
+      commod_codes <- "200"
+    }
   } else if (any(tolower(commod_codes) == "all")) {
     commod_codes <- "ALL"
   } else if (length(commod_codes) > 20) {
     stop(paste("arg 'commod_codes' must be 'all' or a char vector of",
                "commodity codes, length 20 or fewer"), call. = FALSE)
   } else if (length(commod_codes) > 1) {
-    commod_codes <- paste(commod_codes, collapse = ",")
+    commod_codes <- paste(commod_codes, collapse = "%2C")
   }
-
-  ## Get the commodity code scheme type to use.
-  code_type <- ct_commodity_db_type()
 
   ## Get max_rec. If arg value is set to NULL, then max_rec is determined by
   ## whether an API token has been registered. If a token has been registered,
@@ -390,7 +384,7 @@ execute_api_request <- function(url) {
   if (httr::status_code(res) != 200) {
     stop(
       sprintf(
-        "Comtrade API request failed, with status code [%s]\n%s",
+        "Comtrade API request failed, with status code [%s]",
         httr::status_code(res)
       ), call. = FALSE
     )
@@ -419,15 +413,14 @@ execute_api_request <- function(url) {
       # why, throw error that uses the useful message.
       stop(
         sprintf(
-          "API request failed, with status code [%s]\nFail Reason: %s",
-          httr::status_code(res),
+          "API request failed. Err msg from Comtrade:\n  %s",
           raw_data$validation$message
         ), call. = FALSE
       )
     } else {
       # If no data returned and there's no Comtrade message explaining why,
       # this is an indication that there was no error and there really is no
-      # data to return (based on the input valies given). Prep an empty
+      # data to return (based on the input values given). Prep an empty
       # data frame to return.
       df <- matrix(ncol = 35, nrow = 0) %>%
         data.frame(stringsAsFactors = FALSE) %>%
@@ -451,4 +444,102 @@ execute_api_request <- function(url) {
   }
 
   return(df)
+}
+
+
+#' Get Date Range
+#'
+#' @return Date range as a single string, comma sep.
+#' @noRd
+get_date_range <- function(start_date, end_date, freq) {
+  start_date <- as.character(start_date)
+  end_date <- as.character(end_date)
+
+  if (freq == "A") {
+    # Date range when freq is "annual" (date range by year).
+    start_date <- convert_to_date(start_date)
+    end_date <- convert_to_date(end_date)
+    date_range <- seq.Date(start_date, end_date, by = "year") %>%
+      format(format = "%Y")
+  } else if (freq == "M") {
+    # Date range when freq is "monthly".
+    sd_year <- is_year(start_date)
+    ed_year <- is_year(end_date)
+    if (sd_year && ed_year) {
+      # If start_date and end_date are both years ("yyyy") and are identical,
+      # return the single year as the date range.
+      if (identical(start_date, end_date)) {
+        return(start_date)
+      } else {
+        stop("Cannot get more than a single year's worth of monthly data ",
+             "in a single query", call. = FALSE)
+      }
+    } else if (!sd_year && !ed_year) {
+      # If neither start_date nor end_date are years, get date range by month.
+      start_date <- convert_to_date(start_date)
+      end_date <- convert_to_date(end_date)
+      date_range <- seq.Date(start_date, end_date, by = "month") %>%
+        format(format = "%Y%m")
+    } else {
+      # Between start_date and end_date, if one is a year and the other isn't,
+      # throw an error.
+      stop("If arg 'freq' is 'monthly', 'start_date' and 'end_date' must ",
+           "have the same format", call. = FALSE)
+    }
+  }
+
+  # If the derived date range is longer than five elements, throw an error.
+  if (length(date_range) > 5) {
+    stop("If specifying years/months, cannot search more than five ",
+         "consecutive years/months in a single query", call. = FALSE)
+  }
+
+  return(paste(date_range, collapse = "%2C"))
+}
+
+
+#' Given a numeric or character date, convert to an object with class "Date".
+#'
+#' @return Object of class "Date" (using base::as.Date()).
+#' @noRd
+convert_to_date <- function(date_obj) {
+  # Capture arg name from ct_search().
+  arg_name <- deparse(substitute(date_obj))
+  # Convert to Date.
+  if (is_year(date_obj)) {
+    date_obj <- as.Date(paste0(date_obj, "-01-01"), format = "%Y-%m-%d")
+  } else if (is_year_month(date_obj)) {
+    date_obj <- as.Date(paste0(date_obj, "-01"), format = "%Y-%m-%d")
+  } else {
+    date_obj <- as.Date(date_obj, format = "%Y-%m-%d")
+  }
+  # If conversion to Date failed, throw error.
+  if (is.na(date_obj)) {
+    stop(sprintf(
+      paste("arg '%s' must be a date with one of these formats:\n",
+            "int: yyyy\n",
+            "char: 'yyyy'\n",
+            "char: 'yyyy-mm'\n",
+            "char: 'yyyy-mm-dd'"),
+      arg_name
+    ), call. = FALSE)
+  }
+
+  date_obj
+}
+
+
+#' Is input a year string or not.
+#'
+#' @noRd
+is_year <- function(x) {
+  grepl("^\\d{4}$", x)
+}
+
+
+#' Is input a year-month string or not.
+#'
+#' @noRd
+is_year_month <- function(x) {
+  grepl("^\\d{4}-\\d{2}", x)
 }

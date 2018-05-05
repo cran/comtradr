@@ -51,6 +51,7 @@
 #'  \item \code{HS2002}: HS 2002
 #'  \item \code{HS2007}: HS 2007
 #'  \item \code{HS2012}: HS 2012
+#'  \item \code{HS2017}: HS 2017
 #'  \item \code{SITC}: Standard International Trade Classification (SITC), as
 #'    reported
 #'  \item \code{SITCrev1}: SITC Revision 1
@@ -65,15 +66,13 @@
 #'
 #' @export
 #'
-#' @importFrom magrittr "%>%"
-#'
 #' @examples \dontrun{
 #' ct_update_databases()
 #' }
 ct_update_databases <- function(force = FALSE, verbose = TRUE,
                                 commodity_type = c("HS", "HS1992", "HS1996",
                                                    "HS2002", "HS2007",
-                                                   "HS2012", "SITC",
+                                                   "HS2012", "HS2017", "SITC",
                                                    "SITCrev1", "SITCrev2",
                                                    "SITCrev3", "SITCrev4",
                                                    "BEC", "EB02"),
@@ -120,6 +119,8 @@ ct_update_databases <- function(force = FALSE, verbose = TRUE,
     commodity_url <- paste0(commodity_url, "classificationH3.json")
   } else if (commodity_type == "HS2012") {
     commodity_url <- paste0(commodity_url, "classificationH4.json")
+  } else if (commodity_type == "HS2017") {
+    commodity_url <- paste0(commodity_url, "classificationH5.json")
   } else if (commodity_type == "SITC") {
     commodity_url <- paste0(commodity_url, "classificationST.json")
   } else if (commodity_type == "SITCrev1") {
@@ -151,11 +152,11 @@ ct_update_databases <- function(force = FALSE, verbose = TRUE,
   }
 
   # Get the commodity database from the Comtrade website. Compare the
-  # "last-modified" date value within the header to the value in variable
-  # "date" within the current commodity database. If the "last-modified"
-  # date is newer than the date within the current database, or the value
-  # passed to arg "commodty_type" doesn't match the values in variable "type"
-  # of the current database, the old DB will be replaced by the newer DB.
+  # "last-modified" date value within the header to the "date" attribute of
+  # the current commodity database on file. If the "last-modified" date is
+  # newer than the date of the current database, or the value passed to arg
+  # "commodty_type" doesn't match the "type" attribute of the current database,
+  # or arg "force" is TRUE, the old DB will be replaced by the newer DB.
   # Replacement will be for both the current session and within the data dir
   # of the comtradr package.
   res <- httr::GET(commodity_url, httr::user_agent(get("ua", envir = ct_env)))
@@ -190,9 +191,9 @@ ct_update_databases <- function(force = FALSE, verbose = TRUE,
   # Get the reporter country database and the partner country database from
   # the Comtrade website. Compare the "last-modified" date value within the
   # header of each to the "date" attribute of the current country_table
-  # reference dataset on file. If either "last-modified" date is newer than
-  # the date attr of the dataset on file, replace the dataset on file with the
-  # data pulled from the Comtrade website.
+  # database on file. If either of the "last-modified" dates is newer than the
+  # date of the database on file, or if arg "force" is TRUE, replace the
+  # database on file with the data pulled from the Comtrade website.
   country_update <- FALSE
   res_rep <- httr::GET(reporter_url,
                        httr::user_agent(get("ua", envir = ct_env)))
@@ -241,7 +242,7 @@ ct_update_databases <- function(force = FALSE, verbose = TRUE,
   # If updates were found for the country reference dataset, then save the
   # updated country DB to the data dir of the comtradr package, and update
   # "country_df" within ct_env.
-  if (force) {
+  if (country_update) {
     save(
       country_df,
       file = paste0(system.file("extdata", package = "comtradr"),
@@ -265,4 +266,6 @@ ct_update_databases <- function(force = FALSE, verbose = TRUE,
   if (verbose) {
     message(msg)
   }
+
+  return(invisible())
 }

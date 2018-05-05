@@ -27,10 +27,12 @@ any combination of the following: "imports", "exports", "re_imports",
 Must be either "annual" or "monthly". Default value is "annual".}
 
 \item{start_date}{Start date of a time period, or "all". Default value is
-"all". If inputing a date, must be string w/ structure "yyyy-mm-dd".}
+"all". See "details" for more info on valid input formats when not using
+"all" as input.}
 
-\item{end_date}{End date of a time period, or "all". Default value is "all".
-If inputing a date, must be string w/ structure "yyyy-mm-dd".}
+\item{end_date}{End date of a time period, or "all". Default value is
+"all". See "details" for more info on valid input formats when not using
+"all" as input.}
 
 \item{commod_codes}{Character vector of commodity codes, or "TOTAL". Valid
 commodity codes as input will restrict the query to only look for trade
@@ -61,9 +63,9 @@ shipping data. Full API docs can be found here:
 \url{https://comtrade.un.org/data/doc/api/}
 }
 \details{
-Basic rate limit restrictions. For details on how to register a
- valid token, see \code{\link{ct_register_token}}. For API docs on rate
- limits, see \url{https://comtrade.un.org/data/doc/api/#Limits}
+Basic rate limit restrictions listed below. For details on how to
+ register a valid token, see \code{\link{ct_register_token}}. For API docs
+ on rate limits, see \url{https://comtrade.un.org/data/doc/api/#Limits}
  \itemize{
  \item Without authentication token: 1 request per second, 100 requests
    per hour (each per IP address).
@@ -79,8 +81,11 @@ Basic rate limit restrictions. For details on how to register a
    these three may use the catch-all input "All".
  \item For the same group of three ("reporters", "partners", date range),
    if the input is not "All", then the maximum number of input values
-   for each is five (for date range, if not using "all", then the
-   "start_date" and "end_date" must at most span five months or five years).
+   for each is five. For date range, if not using "All", then the
+   "start_date" and "end_date" must not span more than five months or five
+   years. There is one exception to this rule, if arg "freq" is "monthly",
+   then a single year can be passed to "start_date" and "end_date" and the
+   API will return all of the monthly data for that year.
  \item For param "commod_codes", if not using input "All", then the maximum
    number of input values is 20 (although "All" is always a valid input).
  }
@@ -92,6 +97,16 @@ Basic rate limit restrictions. For details on how to register a
  \item time_stamp: date-time of the API call.
  \item req_duration: total duration of the API call, in seconds.
  }
+
+ For args \code{start_date} and \code{end_date}, if inputting a date (as
+ opposed to the catch-all input "all"), valid input format is dependent on
+ the input passed to arg \code{freq}. If \code{freq} is "annual",
+ \code{start_date} and \code{end_date} must be either a string w/ format
+ "yyyy" or "yyyy-mm-dd", or a year as an integer (so "2016", "2016-01-01",
+ and 2016 would all be valid). If \code{freq} is "monhtly",
+ \code{start_date} and \code{end_date} must be a string with format
+ "yyyy-mm" or "yyyy-mm-dd" (so "2016-02" and "2016-02-01" would both be
+ valid).
 }
 \examples{
 \dontrun{
@@ -115,8 +130,8 @@ shrimp_codes <- ct_commodity_lookup("shrimp",
 ex_2 <- ct_search(reporters = "Canada",
                   partners = "All",
                   trade_direction = "all",
-                  start_date = "2011-01-01",
-                  end_date = "2015-01-01",
+                  start_date = 2011,
+                  end_date = 2015,
                   commod_codes = shrimp_codes)
 nrow(ex_2)
 
