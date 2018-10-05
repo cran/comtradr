@@ -1,6 +1,6 @@
 Package: comtradr
 Title: Interface with the United Nations Comtrade API
-Version: 0.2.1
+Version: 0.2.2
 Authors@R: c(person("Chris", "Muir", 
               email = "chrismuirRVA@gmail.com", 
               role = c("aut", "cre")), 
@@ -22,15 +22,15 @@ Depends: R (>= 3.0.0)
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
-Imports: httr, jsonlite, magrittr (>= 1.5), methods, purrr
-RoxygenNote: 6.0.1.9000
+Imports: httr, jsonlite, magrittr (>= 1.5), purrr
+RoxygenNote: 6.1.0
 URL: https://github.com/ropensci/comtradr
 BugReports: https://github.com/ropensci/comtradr/issues
 NeedsCompilation: no
 Maintainer: Chris Muir <chrismuirRVA@gmail.com>
 Suggests: testthat, knitr, rmarkdown, ggplot2, dplyr
 VignetteBuilder: knitr
-Packaged: 2018-05-05 16:24:00 UTC; cmuir
+Packaged: 2018-10-05 04:13:03 UTC; chrismuir
 Author: Chris Muir [aut, cre],
   Alicia Schep [rev] (<https://orcid.org/0000-0002-3915-0618>, Alicia
     reviewed the package for rOpenSci, see
@@ -39,4 +39,4 @@ Author: Chris Muir [aut, cre],
     reviewed the package for rOpenSci, see
     https://github.com/ropensci/onboarding/issues/141)
 Repository: CRAN
-Date/Publication: 2018-05-05 16:43:12 UTC
+Date/Publication: 2018-10-05 05:30:02 UTC
