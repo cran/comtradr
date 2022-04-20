@@ -141,8 +141,13 @@ test_that("throw error with invalid input to arg 'commod_codes'", {
                          partners = "Germany",
                          trade_direction = "all",
                          commod_codes = "invalid_codes"),
-               regexp = "invalid_codes is an invalid commodity code.",
-               fixed = TRUE)
+               regexp = "char vector of codes that can be cast as integers")
+
+  expect_error(ct_search(reporters = "Canada",
+                         partners = "Germany",
+                         trade_direction = "all",
+                         commod_codes = rep("cats", 5)),
+               regexp = "char vector of codes that can be cast as integers")
 })
 
 
@@ -167,16 +172,15 @@ test_that("throw error with more than 20 commodity codes", {
                                   "exports",
                                   "re_imports",
                                   "re_exports"),
-              commod_codes = ct_commodity_lookup("frozen",
-                                                 return_char = TRUE,
-                                                 return_code = TRUE))
+              commod_codes = rep("1", 21)),
+    regexp = "arg 'commod_codes' must be length 20 or fewer"
   )
 })
 
 
 test_that("throw error when hourly query limit is at zero", {
   # Get current rate limit values.
-  cache_vals <- get_cache_values()
+  queries <- ct_get_remaining_hourly_queries()
 
   # Assign the hourly limit value to be 0.
   assign("queries_this_hour", 0, envir = ct_env)
@@ -185,7 +189,7 @@ test_that("throw error when hourly query limit is at zero", {
                          partners = "Germany"))
 
   # Set the rate limit value back to what it was previously.
-  assign("queries_this_hour", cache_vals$queries_this_hour, envir = ct_env)
+  assign("queries_this_hour", queries, envir = ct_env)
 })
 
 

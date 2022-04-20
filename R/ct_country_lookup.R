@@ -21,8 +21,8 @@
 #' @details This function uses regular expressions (regex) to find matches
 #'  within the country DB. This means it will treat as a match any country
 #'  string that contains the input search term. For more on using regex
-#'  within R, see this great tutorial by Gloria Li and Jenny Bryan
-#'  \url{http://stat545.com/block022_regular-expression.html}
+#'  within R, see
+#'  \url{https://stat.ethz.ch/R-manual/R-devel/library/base/html/regex.html}
 #'
 #' @export
 #'
@@ -41,7 +41,7 @@ ct_country_lookup <- function(search_terms, type = c("reporter", "partner"),
   # If length of search_terms is more than one, transform values into a regex
   # friendly string.
   if (length(search_terms) > 1) {
-    search_terms <- paste(search_terms, collapse = "|")
+    search_terms <- paste(search_terms[!is.na(search_terms)], collapse = "|")
   }
 
   # Fetch the country databse from ct_env.
@@ -55,7 +55,7 @@ ct_country_lookup <- function(search_terms, type = c("reporter", "partner"),
 
   # Check output, if valid then return as is, if empty return "no matches"
   # message.
-  if (length(ans) == 0 || is.null(ans) || is.na(ans)) {
+  if (any(c(length(ans) == 0, is.null(ans), all(is.na(ans))))) {
     ans <- "No matching results found"
   }
 

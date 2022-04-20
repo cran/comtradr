@@ -4,8 +4,12 @@
 \alias{ct_country_lookup}
 \title{UN Comtrade country database query}
 \usage{
-ct_country_lookup(search_terms, type = c("reporter", "partner"),
-  ignore.case = TRUE, ...)
+ct_country_lookup(
+  search_terms,
+  type = c("reporter", "partner"),
+  ignore.case = TRUE,
+  ...
+)
 }
 \arguments{
 \item{search_terms}{Char vector of country names.}
@@ -35,8 +39,8 @@ For use with the UN Comtrade API, full API docs can be found at
 This function uses regular expressions (regex) to find matches
  within the country DB. This means it will treat as a match any country
  string that contains the input search term. For more on using regex
- within R, see this great tutorial by Gloria Li and Jenny Bryan
- \url{http://stat545.com/block022_regular-expression.html}
+ within R, see
+ \url{https://stat.ethz.ch/R-manual/R-devel/library/base/html/regex.html}
 }
 \examples{
 # Look up all reporters that contain the terms "korea" and "vietnam"

@@ -143,13 +143,20 @@ ct_search <- function(reporters, partners,
                "of these may be 'all'"), call. = FALSE)
   }
 
-  # Fetch current values within ct_env (these values help manage
-  # throttling of API queries).
-  cache_vals <- get_cache_values()
-
   # If last api query was less than 2 seconds ago, delay code by 2 seconds.
-  if (Sys.time() < cache_vals$last_query + 2) {
+  if (Sys.time() < get("last_query", envir = ct_env) + 2) {
     Sys.sleep(2)
+  }
+
+  # If the hourly time limit has past, reset the hourly time limt and hourly
+  # query count.
+  reset_time <- ct_get_reset_time(set = TRUE)
+
+  # Check to make sure the hourly query limit hasn't been reached.
+  if (ct_get_remaining_hourly_queries() == 0) {
+    msg <- paste("over the hourly limit. hour resets at",
+                 reset_time)
+    stop(msg, call. = FALSE)
   }
 
   # Fetch current value of user token, to see if an auth token has been
@@ -159,19 +166,6 @@ ct_search <- function(reporters, partners,
   # Fetch the country database from ct_env.
   country_df <- get_country_db()
 
-  # Check to see if the current one hour time limit needs to be reset. If
-  # current value is NULL, initialize the cache value with the current time.
-  if (is.null(cache_vals$next_hour_reset) ||
-      Sys.time() > ct_get_reset_time()) {
-    assign("next_hour_reset", Sys.time(), envir = ct_env)
-  }
-
-  # Check to make sure the hourly query limit hasn't been reached.
-  if (cache_vals$queries_this_hour == 0) {
-    msg <- paste("over the hourly limit. hour resets at",
-                 ct_get_reset_time())
-    stop(msg, call. = FALSE)
-  }
 
   ## Get the commodity code scheme type to use.
   code_type <- ct_commodity_db_type() %>%
@@ -211,11 +205,9 @@ ct_search <- function(reporters, partners,
     reporters <- "All"
   }
 
-  if (!all(reporters %in% country_df$country_name)) {
-    err <- paste(
-      reporters[!reporters %in% country_df$country_name],
-      collapse = ", "
-    )
+  missing_reporters <- !reporters %in% country_df[country_df$reporter == TRUE, ]$country_name
+  if (any(missing_reporters)) {
+    err <- paste(reporters[missing_reporters], collapse = ", ")
     stop(paste("From arg 'reporters', these values were not found in the",
                "country database:", err), call. = FALSE)
   }
@@ -236,11 +228,9 @@ ct_search <- function(reporters, partners,
     partners <- "All"
   }
 
-  if (!all(partners %in% country_df$country_name)) {
-    err <- paste(
-      partners[!partners %in% country_df$country_name],
-      collapse = ", "
-    )
+  missing_partners <- !partners %in% country_df[country_df$partner == TRUE, ]$country_name
+  if (any(missing_partners)) {
+    err <- paste(partners[missing_partners], collapse = ", ")
     stop(paste("From arg 'partners', these values were not found in the",
                "country database:", err), call. = FALSE)
   }
@@ -296,6 +286,10 @@ ct_search <- function(reporters, partners,
 
   ## Transformations to commod_codes.
   stopifnot(is.character(commod_codes))
+  if (!codes_as_ints(commod_codes)) {
+    stop("arg 'commod_codes' must be either 'TOTAL', or 'ALL', or a char ",
+         "vector of codes that can be cast as integers", call. = FALSE)
+  }
   if (any(tolower(commod_codes) == "total")) {
     if (code_type != "EB02") {
       commod_codes <- "TOTAL"
@@ -307,8 +301,7 @@ ct_search <- function(reporters, partners,
   } else if (any(tolower(commod_codes) == "all")) {
     commod_codes <- "ALL"
   } else if (length(commod_codes) > 20) {
-    stop(paste("arg 'commod_codes' must be 'all' or a char vector of",
-               "commodity codes, length 20 or fewer"), call. = FALSE)
+    stop(paste("arg 'commod_codes' must be length 20 or fewer"), call. = FALSE)
   } else if (length(commod_codes) > 1) {
     commod_codes <- paste(commod_codes, collapse = "%2C")
   }
@@ -338,8 +331,8 @@ ct_search <- function(reporters, partners,
     "&p=", partners,
     "&rg=", trade_direction,
     "&cc=", commod_codes,
-    "&fmt=", "json",
-    "&head=", "H"
+    "&head=", "H",
+    "&fmt=", "json"
   )
 
   ## If token within global options is not NULL, append the token str to the
@@ -355,7 +348,7 @@ ct_search <- function(reporters, partners,
   res <- execute_api_request(url)
 
   # Edit cache variable "queries_this_hour" to be one less.
-  assign("queries_this_hour", (cache_vals$queries_this_hour - 1),
+  assign("queries_this_hour", (ct_get_remaining_hourly_queries() - 1),
          envir = ct_env)
 
   # Assign metadata attributes to obj "res".
@@ -394,8 +387,9 @@ execute_api_request <- function(url) {
   if (httr::http_type(res) != "application/json") {
     stop(
       sprintf(
-        "API did not return json. Instead, %s data was returned",
-        httr::http_type(res)
+        "API did not return json. Instead, %s data was returned. Return data:\n%s",
+        httr::http_type(res),
+        httr::content(res, "text", encoding = "UTF-8")
       ), call. = FALSE
     )
   }
@@ -542,4 +536,17 @@ is_year <- function(x) {
 #' @noRd
 is_year_month <- function(x) {
   grepl("^\\d{4}-\\d{2}", x)
+}
+
+
+#' Check that all elements of char_vect be successfully cast as integers, OR
+#' that input contains either "total" or "all"
+#'
+#' @noRd
+codes_as_ints <- function(char_vect) {
+  if (any(tolower(char_vect) %in% c("all", "total", "ag1", "ag2", "ag3", "ag4", "ag5", "ag6"))) {
+    return(TRUE)
+  }
+  as_ints <- suppressWarnings(as.integer(char_vect))
+  return(all(!is.na(as_ints)))
 }

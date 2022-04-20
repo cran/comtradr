@@ -4,8 +4,14 @@
 \alias{ct_commodity_lookup}
 \title{UN Comtrade commodities database query}
 \usage{
-ct_commodity_lookup(search_terms, return_code = FALSE,
-  return_char = FALSE, verbose = TRUE, ignore.case = TRUE, ...)
+ct_commodity_lookup(
+  search_terms,
+  return_code = FALSE,
+  return_char = FALSE,
+  verbose = TRUE,
+  ignore.case = TRUE,
+  ...
+)
 }
 \arguments{
 \item{search_terms}{Commodity names or commodity codes, as a char or numeric
@@ -46,8 +52,8 @@ the UN Comtrade API, full API docs can be found at
 This function uses regular expressions (regex) to find matches
  within the commodity DB. This means it will treat as a match any commodity
  description that contains the input search term. For more on using regex
- within R, see this great tutorial by Gloria Li and Jenny Bryan
- \url{http://stat545.com/block022_regular-expression.html}
+ within R, see
+ \url{https://stat.ethz.ch/R-manual/R-devel/library/base/html/regex.html}
 }
 \examples{
 # Look up commodity descriptions related to "halibut"
