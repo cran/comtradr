@@ -363,13 +363,14 @@ directory. This is determined by the
 values for a cache as used by <code>cachem::cache_disk</code>.</p>
 <p>See here: <a href="https://cachem.r-lib.org/reference/cache_disk.html" class="uri">https://cachem.r-lib.org/reference/cache_disk.html</a></p>
 <p>and here: <a href="https://rappdirs.r-lib.org/reference/user_cache_dir.html" class="uri">https://rappdirs.r-lib.org/reference/user_cache_dir.html</a></p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="do">#### Now</span></span>
-<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>q <span class="ot">&lt;-</span> <span class="fu">ct_get_data</span>(<span class="at">reporter =</span> <span class="st">&quot;USA&quot;</span>, </span>
-<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>               <span class="at">partner =</span> <span class="fu">c</span>(<span class="st">&quot;DEU&quot;</span>, <span class="st">&quot;FRA&quot;</span>, <span class="st">&quot;JPN&quot;</span>, <span class="st">&quot;MEX&quot;</span>), </span>
-<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>               <span class="at">flow_direction =</span> <span class="st">&quot;import&quot;</span>,</span>
-<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>               <span class="at">start_date =</span> <span class="dv">2020</span>,</span>
-<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>               <span class="at">end_date =</span> <span class="dv">2023</span>,</span>
-<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>               <span class="at">cache =</span> <span class="cn">TRUE</span>) <span class="co"># &lt;----- set this argument to TRUE</span></span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(comtradr)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="do">#### Now</span></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>q <span class="ot">&lt;-</span> <span class="fu">ct_get_data</span>(<span class="at">reporter =</span> <span class="st">&quot;USA&quot;</span>, </span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>               <span class="at">partner =</span> <span class="fu">c</span>(<span class="st">&quot;DEU&quot;</span>, <span class="st">&quot;FRA&quot;</span>, <span class="st">&quot;JPN&quot;</span>, <span class="st">&quot;MEX&quot;</span>), </span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>               <span class="at">flow_direction =</span> <span class="st">&quot;import&quot;</span>,</span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>               <span class="at">start_date =</span> <span class="dv">2020</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>               <span class="at">end_date =</span> <span class="dv">2023</span>,</span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>               <span class="at">cache =</span> <span class="cn">TRUE</span>) <span class="co"># &lt;----- set this argument to TRUE</span></span></code></pre></div>
 <p>If you want to modify these parameters, you need to set environment
 variables. You can use the
 <code>usethis::edit_r_environ(scope = &#39;project)</code> function to set
@@ -394,6 +395,21 @@ will be saved.</p></li>
 </ul>
 <p>See here for the details on pruning and other functions of
 <code>cachem</code>: <a href="https://cachem.r-lib.org/reference/cache_disk.html" class="uri">https://cachem.r-lib.org/reference/cache_disk.html</a></p>
+</div>
+<div id="careful-with-outdated-data" class="section level3">
+<h3>Careful with outdated data! ⚠️</h3>
+<p>The current default for the cache age is set to <code>Inf</code>,
+hence when you have requested data once, it will never downloaded again.
+For recent data, this can be a very bad idea, as the United Nations
+might update their data and you will only work with outdated data.</p>
+<p>The recommended way is to set the <code>COMTRADR_CACHE_MAX_AGE</code>
+environment variable as described above. E.g.: to
+<code>60*60*24*365</code> for one year.</p>
+<p>To find your cache and empty it by yourself, you can do:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="do">## to delete all files in your cache</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>rappdirs<span class="sc">::</span><span class="fu">user_cache_dir</span>(<span class="st">&#39;comtradr&#39;</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>  <span class="fu">list.files</span>(<span class="at">full.names =</span> T) <span class="sc">|&gt;</span> </span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>  <span class="fu">file.remove</span>()</span></code></pre></div>
 </div>
 </div>
 

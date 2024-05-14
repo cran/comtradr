@@ -16,16 +16,8 @@ Nations Comtrade API <https://comtradeplus.un.org/>. Comtrade provides
 country level shipping data for a variety of commodities, these
 functions allow for easy API query and data returned as a tidy data
 frame. More info can be found
-[here](https://unstats.un.org/wiki/display/comtrade). Full API
+[here](https://uncomtrade.org/docs/welcome-to-un-comtrade/). Full API
 documentation can be found [here](https://comtradedeveloper.un.org/).
-
-The Comtrade API has been undergoing updates in 2023. At this point the
-legacy API has been taken offline (see
-[here](https://unstats.un.org/wiki/display/comtrade/New+Comtrade+FAQ+for+Advanced+Users#NewComtradeFAQforAdvancedUsers-WhatisthelegacyoftheUNComtrade?UntilwhencanIuseit?)).
-The `comtradr` package has accommodated these changes. Some premium
-functions like bulk download are still not supported in the package, but
-we are working on it. See
-<https://github.com/ropensci/comtradr/issues/68> for details.
 
 Please [report](https://github.com/ropensci/comtradr/issues) issues,
 comments, or feature requests. We are very much looking for feedback on
@@ -39,19 +31,17 @@ For information on citation of this package, use `citation("comtradr")`
 
 ## Installation 🛠️
 
-Currently, the package is not on CRAN, but we plan on publishing to CRAN
-in the near future. Install the current development version from this
-repo:
-
-``` r
-# install.packages("devtools")
-devtools::install_github("ropensci/comtradr@main")
-```
-
-Once it is on CRAN, you can install with:
+You can install the package with:
 
 ``` r
 install.packages("comtradr")
+```
+
+To install the dev version from github, use:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("ropensci/comtradr@dev")
 ```
 
 ## Usage
@@ -64,8 +54,7 @@ do it! 💪**
 As stated above, you need an API token, see the FAQ of Comtrade for
 details on how to obtain it:
 
-➡️
-<https://unstats.un.org/wiki/display/comtrade/New+Comtrade+User+Guide#NewComtradeUserGuide-UNComtradeAPIManagement>
+➡️ <https://uncomtrade.org/docs/api-subscription-keys/>
 
 You need to follow the detailed explanations, which include screenshots,
 in the Wiki of Comtrade to the letter. ☝️ I am not writing them out
@@ -140,7 +129,7 @@ wine_codes <- ct_commodity_lookup("wine", return_code = TRUE, return_char = TRUE
 example2 <- ct_get_data(
   reporter =  "ARG",
   flow_direction = "export",
-  partner = "all",
+  partner = "all_countries",
   start_date = 2007,
   end_date = 2011,
   commodity_code = wine_codes
@@ -149,5 +138,45 @@ example2 <- ct_get_data(
 # Inspect the output
 str(example2)
 ```
+
+### Bulk Download Example 📦
+
+To download bulk files, use the function `ct_get_bulk`. Usage is
+documented in the package vignettes, see
+[here](https://docs.ropensci.org/comtradr/articles/bulk_files.html) for
+an example.
+
+Attention, this downloads large files (often more than one Gigabyte in
+size) and requires a premium key.
+
+``` r
+hs0_all <- comtradr::ct_get_bulk(
+  reporter = c("DEU"), # only some examples here,
+  commodity_classification = 'H0',
+  frequency = 'A',
+  verbose = T,
+  start_date = 2020, # only one year here
+  end_date = 2020)
+```
+
+## Data availability
+
+See [here for an
+overview](https://uncomtrade.org/docs/why-are-some-converted-datasets-not-accessible-in-the-ui/)
+of available commodity classifications.
+
+## Comtradr has relaunched recently 🚧
+
+The Comtrade API has been undergoing extensive updates. At this point
+the legacy API has been taken offline (see
+[here](https://unstats.un.org/wiki/display/comtrade/New+Comtrade+FAQ+for+Advanced+Users#NewComtradeFAQforAdvancedUsers-WhatisthelegacyoftheUNComtrade?UntilwhencanIuseit?)).
+
+In order to accommodate the new syntax, as well as adding the new
+functionality, the `comtradr` package has been undergoing an extensive
+re-write. Additionally, it is not possible anymore to query the API
+without an API token. There still is a free version, but unlike before
+you need to be a registered user to obtain the token. See the
+[FAQ](https://unstats.un.org/wiki/display/comtrade/New+Comtrade+User+Guide#NewComtradeUserGuide-UNComtradeAPIManagement)
+for details on how to obtain the new access tokens.
 
 [![ropensci_footer](https://ropensci.org/public_images/ropensci_footer.png)](https://ropensci.org)

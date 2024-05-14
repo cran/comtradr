@@ -1,49 +1,69 @@
-comtradr 0.4.0
-====================
+# comtradr 1.0.0
+
+* with this update comtradr has reached full functionality, including bulk files
+
+## New features
+
+* **BULK DOWNLOAD ADDED:** the function `ct_get_bulk` has been added. 
+It enables the use of the bulk download facility from Comtrade. 
+
+* Please see the vignette 
+https://docs.ropensci.org/comtradr/articles/bulk_files.html for details
+
+## Bug fixes
+
+* The check for the parameter flowCode did not allow the value "everything"
+as it should. Now it does (commit 279cf03)
+
+
+
+
+
+
+# comtradr 0.4.0.0
+
 
 * comtradr has received a complete overhaul. Please reference the Readme for all new functions and use-cases.
 
 ## NEW FEATURES
 
-- **Caching Functionality**: Implemented enhanced caching features, and added a dedicated vignette explaining caching concepts. Environment variables allow for configuration of some caching features.
+* **Caching Functionality**: Implemented enhanced caching features, and added a dedicated vignette explaining caching concepts. Environment variables allow for configuration of some caching features.
 
-- **Functionality Updates**: Major updates to key functions such as `ct_get_data` and `ct_get_ref_table`, including parameter adjustments and usability improvements, mostly checks for all important parameters before the request is send out.
+* **Functionality Updates**: Major updates to key functions such as `ct_get_data` and `ct_get_ref_table`, including parameter adjustments and usability improvements, mostly checks for all important parameters before the request is send out.
 
 ### Deprecated in Version 0.4.0
 
-- **ct_commodity_db_type**
-  - Deprecated with no direct alternative.
+* **ct_commodity_db_type**
+  * Deprecated with no direct alternative.
 
-- **ct_country_lookup**
-  - Deprecated, use `country_codes` dataset for country codes.
+* **ct_country_lookup**
+  * Deprecated, use `country_codes` dataset for country codes.
 
-- **ct_search**
-  - Deprecated, use `ct_get_data()` as an alternative.
+* **ct_search**
+  * Deprecated, use `ct_get_data()` as an alternative.
 
-- **ct_update_databases**
-  - Deprecated, utilize the `update` parameter in `ct_get_data`.
+* **ct_update_databases**
+  * Deprecated, utilize the `update` parameter in `ct_get_data`.
 
-- **ct_use_pretty_cols**
-  - Deprecated, replaced by the `process` argument in main functions.
+* **ct_use_pretty_cols**
+  * Deprecated, replaced by the `process` argument in main functions.
 
-- **ct_get_reset_time**
-  - Deprecated, no longer relevant due to daily call limit enforcement.
+* **ct_get_reset_time**
+  * Deprecated, no longer relevant due to daily call limit enforcement.
 
-- **ct_get_remaining_hourly_queries**
-  - Deprecated, as hourly reset time no longer exists.
+* **ct_get_remaining_hourly_queries**
+  * Deprecated, as hourly reset time no longer exists.
 
-- **ct_register_token**
-  - Deprecated, use `set_primary_comtrade_key()` instead.
+* **ct_register_token**
+  * Deprecated, use `set_primary_comtrade_key()` instead.
   
   
-comtradr 0.3.0.09000
-====================
+# comtradr 0.3.0.09000
 
 * No news yet!
 
 
-comtradr 0.3.0
-====================
+# comtradr 0.3.0
 
 ## NEW FEATURES
 
@@ -69,13 +89,12 @@ the file `inst/extdata/country_table.rda`. ([#29](https://github.com/ropensci/co
 * In func `ct_country_lookup()`, remove `NA` inputs from multi-country lookups (previously `NA` was being stringified and included in the pipe-separated regex lookup).
 
 
-comtradr 0.2.2
-====================
+# comtradr 0.2.2
+
 
 * Remove unused dependency `methods` from `Imports`.
 
-comtradr 0.2.1
-====================
+# comtradr 0.2.1
 
 ## NEW FEATURES
 
@@ -91,8 +110,8 @@ comtradr 0.2.1
 * `ct_commodity_lookup()` no longer returns zero results when passing all caps input to arg `search_terms` ([#9](https://github.com/ropensci/comtradr/issues/9)).
 
 
-comtradr 0.1.0
-===================
+# comtradr 0.1.0
+
 
 ## PKG API CHANGES
 
@@ -107,7 +126,7 @@ comtradr 0.1.0
 ## MINOR CHANGES
 
 * Added a vignette directory, with an "Intro to comtradr" vignette.
-* API requests are now throttled based on the [rate limits](https://comtrade.un.org/data/doc/api/#Limits) imposed by the UN Comtrade.
+* API requests are now throttled based on the [rate limits](https://uncomtrade.org/docs/subscriptions/) imposed by the UN Comtrade.
 * Added function for setting a valid API key/token (`ct_register_token`).
 * Appending API metadata to each returned data frame as attributes (url of the API call, date-time of the query, duration of the query in seconds).
 * Added package level man page.
@@ -120,8 +139,7 @@ comtradr 0.1.0
 * The issues related to type-safety in function `commodity_lookup` have been fixed by importing `purrr` and using `purrr::map` in place of `sapply`. This fixes [issue #2](https://github.com/ropensci/comtradr/issues/2) and [issue #3](https://github.com/ropensci/comtradr/issues/3).
 
 
-comtradr 0.0.2 (2017-07-03)
-===========================
+# comtradr 0.0.2 (2017-07-03)
 
 ## NEW FEATURES
 
@@ -132,8 +150,7 @@ comtradr 0.0.2 (2017-07-03)
 * Add unit tests via [testthat](https://github.com/r-lib/testthat).
 
 
-comtradr 0.0.1 (2017-04-06)
-===========================
+# comtradr 0.0.1 (2017-04-06)
 
 ## NEW FEATURES
 

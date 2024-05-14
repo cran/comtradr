@@ -1,6 +1,6 @@
 Package: comtradr
-Title: Interface with the United Nations 'Comtrade' API
-Version: 0.4.0.0
+Title: Interface with the United Nations Comtrade API
+Version: 1.0.0
 Maintainer: Paul Bochtler <paulbochtler.gh@gmail.com>
 Authors@R: c(
             person("Paul", "Bochtler", 
@@ -54,7 +54,7 @@ NeedsCompilation: no
 VignetteBuilder: knitr
 Config/testthat/edition: 3
 Language: en-US
-Packaged: 2024-02-05 23:48:53 UTC; paulbochtler
+Packaged: 2024-05-13 13:04:04 UTC; paulbochtler
 Author: Paul Bochtler [aut, cre, cph] (<https://orcid.org/0000-0002-9146-6185>),
   Harriet Goers [aut],
   Chris Muir [aut],
@@ -72,4 +72,4 @@ Author: Paul Bochtler [aut, cre, cph] (<https://orcid.org/0000-0002-9146-6185>),
     https://github.com/ropensci/software-review/issues/613),
   Juergen Amann [ctb]
 Repository: CRAN
-Date/Publication: 2024-02-06 18:00:02 UTC
+Date/Publication: 2024-05-14 07:53:10 UTC
