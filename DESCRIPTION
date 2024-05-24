@@ -1,6 +1,6 @@
 Package: comtradr
 Title: Interface with the United Nations Comtrade API
-Version: 1.0.0
+Version: 1.0.1
 Maintainer: Paul Bochtler <paulbochtler.gh@gmail.com>
 Authors@R: c(
             person("Paul", "Bochtler", 
@@ -40,13 +40,13 @@ Description: Interface with and extract data from the United Nations 'Comtrade'
   and data returned as a tidy data frame.
 Depends: R (>= 4.1.0)
 Imports: lifecycle, fs, readr, askpass, cli, httr2, rlang, stringr,
-        poorman, lubridate, purrr, rappdirs, memoise, cachem
+        poorman, lubridate, purrr, tools, rappdirs, memoise, cachem
 Suggests: covr, dplyr, ggplot2, httptest2, knitr, rmarkdown, spelling,
         testthat (>= 3.0.0), callr
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.1
 URL: https://docs.ropensci.org/comtradr/,
         https://github.com/ropensci/comtradr
 BugReports: https://github.com/ropensci/comtradr/issues
@@ -54,7 +54,7 @@ NeedsCompilation: no
 VignetteBuilder: knitr
 Config/testthat/edition: 3
 Language: en-US
-Packaged: 2024-05-13 13:04:04 UTC; paulbochtler
+Packaged: 2024-05-23 13:49:42 UTC; paulbochtler
 Author: Paul Bochtler [aut, cre, cph] (<https://orcid.org/0000-0002-9146-6185>),
   Harriet Goers [aut],
   Chris Muir [aut],
@@ -72,4 +72,4 @@ Author: Paul Bochtler [aut, cre, cph] (<https://orcid.org/0000-0002-9146-6185>),
     https://github.com/ropensci/software-review/issues/613),
   Juergen Amann [ctb]
 Repository: CRAN
-Date/Publication: 2024-05-14 07:53:10 UTC
+Date/Publication: 2024-05-24 08:30:08 UTC

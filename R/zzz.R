@@ -13,6 +13,38 @@ assign(
 )
 
 
+check_old_cache_message <- function() {
+  cli::cli_inform(
+    c(
+      "In the last version of comtradr the cache location has been changed, because it was not CRAN compliant. You can:", #nolint
+      'v' = 'Migrate the cache and clean old files with {.run ct_migrate_cache()}',
+      'x' = 'Ignore this warning, a new cache is created automatically.',
+      'i' = "Delete your old cache manually with:",
+      '*' = "{.run rappdirs::user_cache_dir('comtradr') |> list.files(full.names = T) |>   file.remove()}",  #nolint
+      ' ' = "and",
+      '*' = "{.run rappdirs::user_cache_dir('comtradr_bulk') |> list.files(full.names = T) |>   file.remove()}"), #nolint
+    class = "packageStartupMessage"
+  )
+}
+
+.onAttach <- function(libname, pkgname) {
+  ## throw a warning, if a cache in the non-compliant directory is detected
+  ## but only if there is actually any files in this directory
+  ## pointing to the migrating function
+  if ((
+    rappdirs::user_cache_dir('comtradr') !=
+    tools::R_user_dir('comtradr', which = 'cache')
+  ) &&
+  (length(list.files(rappdirs::user_cache_dir('comtradr'))) > 0 |
+   length(list.files(
+     rappdirs::user_cache_dir('comtradr_bulk')
+   )) > 0)) {
+    check_old_cache_message()
+    }
+}
+
+
+
 .onLoad <- function(libname, pkgname) {
   max_size_env <- Sys.getenv("COMTRADR_CACHE_MAX_SIZE")
   max_age_env <- Sys.getenv("COMTRADR_CACHE_MAX_AGE")
@@ -23,8 +55,8 @@ assign(
   max_age <- ifelse(nzchar(max_age_env), eval(parse(text = max_age_env)), Inf)
   max_n <- ifelse(nzchar(max_n_env), eval(parse(text = max_n_env)), Inf)
 
-  cache <- cachem::cache_disk(dir = rappdirs::user_cache_dir(
-    appname = 'comtradr'),
+  cache <- cachem::cache_disk(dir = tools::R_user_dir('comtradr',
+                                                      which = 'cache'),
                               max_size = max_size,
                               max_age = max_age,
                               max_n = max_n)
@@ -46,6 +78,9 @@ assign(
   assign(x = "cache",
          value = cache,
          envir = rlang::ns_env("comtradr"))
+
+
+
 }
 
 # Initialize placeholders for package data within ct_env.

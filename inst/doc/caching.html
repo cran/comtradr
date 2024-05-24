@@ -359,10 +359,11 @@ return the same data every time. 🌍</li>
 <p>When you set the respective argument to <code>TRUE</code>, a
 directory named <code>comtradr</code> will be set up in your cache
 directory. This is determined by the
-<code>rappdirs::user_cache_dir</code> function. It has the default
-values for a cache as used by <code>cachem::cache_disk</code>.</p>
+<code>tools::R_user_dir(which = &#39;cache&#39;)</code> function. It has the
+default values for a cache as used by
+<code>cachem::cache_disk</code>.</p>
 <p>See here: <a href="https://cachem.r-lib.org/reference/cache_disk.html" class="uri">https://cachem.r-lib.org/reference/cache_disk.html</a></p>
-<p>and here: <a href="https://rappdirs.r-lib.org/reference/user_cache_dir.html" class="uri">https://rappdirs.r-lib.org/reference/user_cache_dir.html</a></p>
+<p>and here:<a href="https://stat.ethz.ch/R-manual/R-devel/library/tools/html/userdir.html" class="uri">https://stat.ethz.ch/R-manual/R-devel/library/tools/html/userdir.html</a></p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(comtradr)</span>
 <span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="do">#### Now</span></span>
 <span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>q <span class="ot">&lt;-</span> <span class="fu">ct_get_data</span>(<span class="at">reporter =</span> <span class="st">&quot;USA&quot;</span>, </span>
@@ -407,9 +408,14 @@ environment variable as described above. E.g.: to
 <code>60*60*24*365</code> for one year.</p>
 <p>To find your cache and empty it by yourself, you can do:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="do">## to delete all files in your cache</span></span>
-<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>rappdirs<span class="sc">::</span><span class="fu">user_cache_dir</span>(<span class="st">&#39;comtradr&#39;</span>) <span class="sc">|&gt;</span> </span>
-<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>  <span class="fu">list.files</span>(<span class="at">full.names =</span> T) <span class="sc">|&gt;</span> </span>
-<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>  <span class="fu">file.remove</span>()</span></code></pre></div>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>tools<span class="sc">::</span><span class="fu">R_user_dir</span>(<span class="st">&#39;comtradr&#39;</span>, <span class="at">which =</span> <span class="st">&#39;cache&#39;</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>  fs<span class="sc">::</span><span class="fu">dir_delete</span>()</span></code></pre></div>
+<p>and</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="do">## to delete all files in your cache</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>tools<span class="sc">::</span><span class="fu">R_user_dir</span>(<span class="st">&#39;comtradr_bulk&#39;</span>, <span class="at">which =</span> <span class="st">&#39;cache&#39;</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>  fs<span class="sc">::</span><span class="fu">dir_delete</span>()</span></code></pre></div>
+<p>You will have to restart <code>comtradr</code> to re-create the cache
+and be able to use the package.</p>
 </div>
 </div>
 

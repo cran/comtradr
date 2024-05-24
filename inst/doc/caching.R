@@ -10,7 +10,11 @@
 
 ## ----eval = FALSE-------------------------------------------------------------
 #  ## to delete all files in your cache
-#  rappdirs::user_cache_dir('comtradr') |>
-#    list.files(full.names = T) |>
-#    file.remove()
+#  tools::R_user_dir('comtradr', which = 'cache') |>
+#    fs::dir_delete()
+
+## ----eval = FALSE-------------------------------------------------------------
+#  ## to delete all files in your cache
+#  tools::R_user_dir('comtradr_bulk', which = 'cache') |>
+#    fs::dir_delete()
 
