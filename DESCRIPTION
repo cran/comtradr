@@ -1,6 +1,6 @@
 Package: comtradr
 Title: Interface with the United Nations Comtrade API
-Version: 1.0.2
+Version: 1.0.3
 Maintainer: Paul Bochtler <paulbochtler.gh@gmail.com>
 Authors@R: c(
             person("Paul", "Bochtler", 
@@ -46,7 +46,7 @@ Suggests: covr, dplyr, ggplot2, httptest2, knitr, rmarkdown, spelling,
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2
 URL: https://docs.ropensci.org/comtradr/,
         https://github.com/ropensci/comtradr
 BugReports: https://github.com/ropensci/comtradr/issues
@@ -54,7 +54,7 @@ NeedsCompilation: no
 VignetteBuilder: knitr
 Config/testthat/edition: 3
 Language: en-US
-Packaged: 2024-09-19 13:04:40 UTC; paulbochtler
+Packaged: 2024-11-15 17:25:56 UTC; paulbochtler
 Author: Paul Bochtler [aut, cre, cph] (<https://orcid.org/0000-0002-9146-6185>),
   Harriet Goers [aut],
   Chris Muir [aut],
@@ -72,4 +72,4 @@ Author: Paul Bochtler [aut, cre, cph] (<https://orcid.org/0000-0002-9146-6185>),
     https://github.com/ropensci/software-review/issues/613),
   Juergen Amann [ctb]
 Repository: CRAN
-Date/Publication: 2024-09-20 12:10:08 UTC
+Date/Publication: 2024-11-15 17:40:08 UTC

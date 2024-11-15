@@ -60,7 +60,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
 { counter-reset: source-line 0; }
@@ -474,7 +474,7 @@ which can then be passed along to <code>ct_search</code>.</p>
 <pre><code>## [1] &quot;https://comtradeapi.un.org/data/v1/get/C/A/HS?cmdCode=TOTAL&amp;flowCode=M&amp;partnerCode=280%2C276&amp;reporterCode=842%2C841&amp;period=2012&amp;motCode=0&amp;partner2Code=0&amp;customsCode=C00&amp;includeDesc=TRUE&quot;</code></pre>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="co"># The date-time of the API call.</span></span>
 <span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a><span class="fu">attributes</span>(q)<span class="sc">$</span>time</span></code></pre></div>
-<pre><code>## [1] &quot;2023-12-23 12:47:51 CET&quot;</code></pre>
+<pre><code>## [1] &quot;2023-12-23 08:47:51 -03&quot;</code></pre>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="co"># The total duration of the API call, in seconds is not returned anymore!</span></span></code></pre></div>
 </div>
 <div id="package-data" class="section level3">
