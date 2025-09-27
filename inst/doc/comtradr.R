@@ -47,7 +47,7 @@ str(example_1)
 
 ## ----eval = FALSE-------------------------------------------------------------
 #  # all monthly data for a single year (API max of 12 months per call).
-#  q <- ct_search(reporters = "USA",
+#  q <- ct_get_data(reporters = "USA",
 #                 partners = c("Germany", "France", "Japan", "Mexico"),
 #                 flow_direction = "import",
 #                 start_date = 2012,
@@ -55,7 +55,7 @@ str(example_1)
 #                 freq = "monthly")
 #  
 #  # monthly data for specific span of months (API max of twelve months per call).
-#  q <- ct_search(reporters = "USA",
+#  q <- ct_get_data(reporters = "USA",
 #                 partners = c("Germany", "France", "Japan", "Mexico"),
 #                 flow_direction = "import",
 #                 start_date = "2012-03",
