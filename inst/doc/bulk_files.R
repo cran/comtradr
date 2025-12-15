@@ -25,31 +25,31 @@ if (!file.exists(hs5)) {
 load(hs5)
 
 ## ----free_api, eval = F-------------------------------------------------------
-#  hs0 <- comtradr::ct_get_data(
-#    reporter = c("DEU","FRA"), # only some examples here,
-#    commodity_classification = 'HS',
-#    commodity_code = '0306',
-#    start_date = 1990, # only one year here
-#    end_date = 1990)
-#  
-#  hs5 <- comtradr::ct_get_data(
-#    reporter = c("DEU","FRA"), # only some examples here,
-#    commodity_classification = 'HS',
-#    commodity_code = '0306',
-#    start_date = 2020, # only one year here
-#    end_date = 2020)
+# hs0 <- comtradr::ct_get_data(
+#   reporter = c("DEU","FRA"), # only some examples here,
+#   commodity_classification = 'HS',
+#   commodity_code = '0306',
+#   start_date = 1990, # only one year here
+#   end_date = 1990)
+# 
+# hs5 <- comtradr::ct_get_data(
+#   reporter = c("DEU","FRA"), # only some examples here,
+#   commodity_classification = 'HS',
+#   commodity_code = '0306',
+#   start_date = 2020, # only one year here
+#   end_date = 2020)
 
 ## ----cmd_desc_differences-----------------------------------------------------
 print(unique(c(hs0$cmd_desc,hs5$cmd_desc)))
 
 ## ----eval = FALSE-------------------------------------------------------------
-#  hs0_all <- comtradr::ct_get_bulk(
-#    reporter = c("DEU","FRA"), # only some examples here,
-#    commodity_classification = 'H0',
-#    frequency = 'A',
-#    verbose = T,
-#    start_date = 1990, # only one year here
-#    end_date = 2020)
+# hs0_all <- comtradr::ct_get_bulk(
+#   reporter = c("DEU","FRA"), # only some examples here,
+#   commodity_classification = 'H0',
+#   frequency = 'A',
+#   verbose = T,
+#   start_date = 1990, # only one year here
+#   end_date = 2020)
 
 ## ----echo = FALSE-------------------------------------------------------------
 hs0_all <- system.file("extdata", "vignette_data_10.rda", package = "comtradr")

@@ -8,21 +8,21 @@ knitr::opts_chunk$set(
 library(comtradr)
 
 ## ----eval = FALSE-------------------------------------------------------------
-#  install.packages("comtradr")
+# install.packages("comtradr")
 
 ## -----------------------------------------------------------------------------
 library(comtradr)
 
 ## ----eval = F-----------------------------------------------------------------
-#  library(comtradr)
-#  
-#  set_primary_comtrade_key()
+# library(comtradr)
+# 
+# set_primary_comtrade_key()
 
 ## ----eval = F-----------------------------------------------------------------
-#  Sys.setenv('COMTRADE_PRIMARY' = 'xxxxxxxxxxxxxxxxx')
+# Sys.setenv('COMTRADE_PRIMARY' = 'xxxxxxxxxxxxxxxxx')
 
 ## ----eval = F-----------------------------------------------------------------
-#  usethis::edit_r_environ(scope = 'project')
+# usethis::edit_r_environ(scope = 'project')
 
 ## ----echo = FALSE-------------------------------------------------------------
 v_data_1 <- system.file("extdata", "vignette_data_1.rda", package = "comtradr")
@@ -33,62 +33,62 @@ if (!file.exists(v_data_1)) {
 load(v_data_1)
 
 ## ----eval = FALSE-------------------------------------------------------------
-#  example_1 <- ct_get_data(
-#    reporter = 'USA',
-#    partner = c('DEU', 'FRA','JPN','MEX'),
-#    commodity_code = 'TOTAL',
-#    start_date = 2018,
-#    end_date = 2023,
-#    flow_direction = 'import'
-#  )
+# example_1 <- ct_get_data(
+#   reporter = 'USA',
+#   partner = c('DEU', 'FRA','JPN','MEX'),
+#   commodity_code = 'TOTAL',
+#   start_date = 2018,
+#   end_date = 2023,
+#   flow_direction = 'import'
+# )
 
 ## -----------------------------------------------------------------------------
 str(example_1)
 
 ## ----eval = FALSE-------------------------------------------------------------
-#  # all monthly data for a single year (API max of 12 months per call).
-#  q <- ct_get_data(reporters = "USA",
-#                 partners = c("Germany", "France", "Japan", "Mexico"),
-#                 flow_direction = "import",
-#                 start_date = 2012,
-#                 end_date = 2012,
-#                 freq = "monthly")
-#  
-#  # monthly data for specific span of months (API max of twelve months per call).
-#  q <- ct_get_data(reporters = "USA",
-#                 partners = c("Germany", "France", "Japan", "Mexico"),
-#                 flow_direction = "import",
-#                 start_date = "2012-03",
-#                 end_date = "2012-07",
-#                 freq = "monthly")
+# # all monthly data for a single year (API max of 12 months per call).
+# q <- ct_get_data(reporters = "USA",
+#                partners = c("Germany", "France", "Japan", "Mexico"),
+#                flow_direction = "import",
+#                start_date = 2012,
+#                end_date = 2012,
+#                freq = "monthly")
+# 
+# # monthly data for specific span of months (API max of twelve months per call).
+# q <- ct_get_data(reporters = "USA",
+#                partners = c("Germany", "France", "Japan", "Mexico"),
+#                flow_direction = "import",
+#                start_date = "2012-03",
+#                end_date = "2012-07",
+#                freq = "monthly")
 
 ## -----------------------------------------------------------------------------
 ct_commodity_lookup("tomato")
 
 ## ----eval = FALSE-------------------------------------------------------------
-#  tomato_codes <- ct_commodity_lookup("tomato",
-#                                      return_code = TRUE,
-#                                      return_char = TRUE)
-#  
-#  q <- ct_get_data(
-#    reporter = 'USA',
-#    partner = c('DEU', 'FRA','JPN','MEX'),
-#    commodity_code = tomato_codes,
-#    start_date = "2012",
-#    end_date = "2013",
-#    flow_direction = 'import'
-#  )
+# tomato_codes <- ct_commodity_lookup("tomato",
+#                                     return_code = TRUE,
+#                                     return_char = TRUE)
+# 
+# q <- ct_get_data(
+#   reporter = 'USA',
+#   partner = c('DEU', 'FRA','JPN','MEX'),
+#   commodity_code = tomato_codes,
+#   start_date = "2012",
+#   end_date = "2013",
+#   flow_direction = 'import'
+# )
 
 ## ----eval = FALSE-------------------------------------------------------------
-#  q <- ct_get_data(
-#    reporter = 'USA',
-#    partner = c('DEU', 'FRA','JPN','MEX'),
-#    commodity_code  = c("0702", "070200", "2002", "200210", "200290"),
-#    start_date = "2012",
-#    end_date = "2013",
-#    flow_direction = 'import'
-#  )
-#  
+# q <- ct_get_data(
+#   reporter = 'USA',
+#   partner = c('DEU', 'FRA','JPN','MEX'),
+#   commodity_code  = c("0702", "070200", "2002", "200210", "200290"),
+#   start_date = "2012",
+#   end_date = "2013",
+#   flow_direction = 'import'
+# )
+# 
 
 ## -----------------------------------------------------------------------------
 # The url of the API call.
@@ -106,7 +106,7 @@ ct_commodity_lookup(c("tomato", "trout"), return_char = FALSE)
 ct_commodity_lookup(c("tomato", "sldfkjkfdsklsd"), verbose = TRUE)
 
 ## ----eval = F-----------------------------------------------------------------
-#  ct_commodity_lookup('tomato',update = T)
+# ct_commodity_lookup('tomato',update = T)
 
 ## ----echo = FALSE-------------------------------------------------------------
 v_data_2 <- system.file("extdata", "vignette_data_2.rda", package = "comtradr")
@@ -117,15 +117,15 @@ if (!file.exists(v_data_2)) {
 load(v_data_2)
 
 ## ----eval = FALSE-------------------------------------------------------------
-#  # Comtrade api query.
-#  example_2 <- ct_get_data(
-#    reporter = 'CHN',
-#    partner = c('KOR', 'USA','MEX'),
-#    commodity_code = 'TOTAL',
-#    start_date = 2012,
-#    end_date = 2023,
-#    flow_direction = 'export'
-#  )
+# # Comtrade api query.
+# example_2 <- ct_get_data(
+#   reporter = 'CHN',
+#   partner = c('KOR', 'USA','MEX'),
+#   commodity_code = 'TOTAL',
+#   start_date = 2012,
+#   end_date = 2023,
+#   flow_direction = 'export'
+# )
 
 ## ----warning = FALSE, message = FALSE-----------------------------------------
 library(ggplot2)
@@ -153,18 +153,18 @@ if (!file.exists(v_data_3)) {
 load(v_data_3)
 
 ## ----eval = FALSE-------------------------------------------------------------
-#  # First, collect commodity codes related to shrimp.
-#  shrimp_codes <- ct_commodity_lookup("shrimp",
-#                                      return_code = TRUE,
-#                                      return_char = TRUE)
-#  
-#  # Comtrade api query.
-#  example_3 <- ct_get_data(reporter = "THA",
-#                  partner = "all",
-#                  trade_direction = "exports",
-#                  start_date = 2007,
-#                  end_date = 2011,
-#                  commodity_code = shrimp_codes)
+# # First, collect commodity codes related to shrimp.
+# shrimp_codes <- ct_commodity_lookup("shrimp",
+#                                     return_code = TRUE,
+#                                     return_char = TRUE)
+# 
+# # Comtrade api query.
+# example_3 <- ct_get_data(reporter = "THA",
+#                 partner = "all",
+#                 trade_direction = "exports",
+#                 start_date = 2007,
+#                 end_date = 2011,
+#                 commodity_code = shrimp_codes)
 
 ## ----warning = FALSE, message = FALSE-----------------------------------------
 library(ggplot2)
@@ -199,13 +199,13 @@ ggplot(plotdf,aes(period,kg/1000, group = partner_desc))+
   theme(axis.text.x = element_text(angle = 45,hjust = 1, vjust = 1))
 
 ## ----warning = FALSE, message = FALSE, eval = F-------------------------------
-#  # Querying all commodities and flow directions for USA and Germany from
-#  ## 2010 to 2011
-#  data <- ct_get_data(
-#    reporter = c('USA', 'DEU'),
-#    commodity_code = 'everything',
-#    flow_direction = 'everything',
-#    start_date = '2010',
-#    end_date = '2011'
-#  )
+# # Querying all commodities and flow directions for USA and Germany from
+# ## 2010 to 2011
+# data <- ct_get_data(
+#   reporter = c('USA', 'DEU'),
+#   commodity_code = 'everything',
+#   flow_direction = 'everything',
+#   start_date = '2010',
+#   end_date = '2011'
+# )
 

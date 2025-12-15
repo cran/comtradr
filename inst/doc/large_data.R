@@ -65,19 +65,19 @@ if (!file.exists(v_data_6)) {
 load(v_data_6)
 
 ## ----eval = F-----------------------------------------------------------------
-#  eu_countries <- giscoR::gisco_countrycode |>
-#    filter(eu == T) |>
-#    pull(ISO3_CODE)
+# eu_countries <- giscoR::gisco_countrycode |>
+#   filter(eu == T) |>
+#   pull(ISO3_CODE)
 
 ## ----eval = F-----------------------------------------------------------------
-#  data_eu_imports <- ct_get_data(
-#      commodity_code = wood,
-#      reporter = eu_countries,
-#      partner = "all_countries",
-#      flow_direction = "import",
-#      start_date = 2018,
-#      end_date = 2022
-#    )
+# data_eu_imports <- ct_get_data(
+#     commodity_code = wood,
+#     reporter = eu_countries,
+#     partner = "all_countries",
+#     flow_direction = "import",
+#     start_date = 2018,
+#     end_date = 2022
+#   )
 
 ## ----echo = FALSE-------------------------------------------------------------
 v_data_4 <- system.file("extdata", "vignette_data_4.rda", package = "comtradr")
@@ -96,45 +96,45 @@ if (!file.exists(v_data_5)) {
 load(v_data_5)
 
 ## ----eval = F-----------------------------------------------------------------
-#  ## initiate a new instance of an empty tibble()
-#  data_eu_imports <- data.frame()
-#  
-#  for(reporter in eu_countries){
-#    ## for a simple status, print the country we are at
-#    ## you can get a lot fancier with the library `progress` for progress bars
-#    print(reporter)
-#  
-#    ## assign the result into a temporary object
-#    temp <- ct_get_data(
-#      commodity_code = wood,
-#      reporter = reporter,
-#      partner = "all_countries",
-#      flow_direction = "import",
-#      start_date = 2018,
-#      end_date = 2022
-#    )
-#  
-#    ## bind the subset to the complete data
-#    data_eu_imports <- rbind(data_eu_imports, temp)
-#  
-#    ## note that I did not include any sleep() command here to make the requests
-#    ## wait for a specified amount of time, the package keeps track of that for
-#    ## you automatically and backs off when needed
-#  }
-#  
+# ## initiate a new instance of an empty tibble()
+# data_eu_imports <- data.frame()
+# 
+# for(reporter in eu_countries){
+#   ## for a simple status, print the country we are at
+#   ## you can get a lot fancier with the library `progress` for progress bars
+#   print(reporter)
+# 
+#   ## assign the result into a temporary object
+#   temp <- ct_get_data(
+#     commodity_code = wood,
+#     reporter = reporter,
+#     partner = "all_countries",
+#     flow_direction = "import",
+#     start_date = 2018,
+#     end_date = 2022
+#   )
+# 
+#   ## bind the subset to the complete data
+#   data_eu_imports <- rbind(data_eu_imports, temp)
+# 
+#   ## note that I did not include any sleep() command here to make the requests
+#   ## wait for a specified amount of time, the package keeps track of that for
+#   ## you automatically and backs off when needed
+# }
+# 
 
 ## -----------------------------------------------------------------------------
 nrow(data_eu_imports)
 
 ## ----eval = F-----------------------------------------------------------------
-#  data_eu_imports_world <- ct_get_data(
-#      commodity_code = wood,
-#      reporter = eu_countries,
-#      partner = "World",
-#      flow_direction = "import",
-#      start_date = 2018,
-#      end_date = 2022
-#    )
+# data_eu_imports_world <- ct_get_data(
+#     commodity_code = wood,
+#     reporter = eu_countries,
+#     partner = "World",
+#     flow_direction = "import",
+#     start_date = 2018,
+#     end_date = 2022
+#   )
 
 ## -----------------------------------------------------------------------------
 nrow(data_eu_imports_world)
